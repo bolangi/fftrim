@@ -1,0 +1,25 @@
+#!/usr/bin/env perl
+use Modern::Perl;
+use Getopt::Long::Descriptive;
+             
+my ($opt, $usage) = describe_options(
+   '%c %o',  
+   [ 'i=s',     "input file" ],
+   [ 'o=s',     "output file" ],
+   [ 'start=s', "start position" ],
+   [ 'end=s',   "end position" ],
+   [ 'help',    "print usage message and exit" ],
+   [ 'n',       "print command" ],
+ );          
+print($usage->text), exit if $opt->{help} or ! keys %$opt;
+$opt->{i} and $opt->{o} or say("input or output file not specified, aborting"), exit;
+my @args = ('ffmpeg');
+push @args, "-ss $opt->{start}" if $opt->{start};
+push @args, "-i $opt->{i}";
+push @args, "-to $opt->{end}" if $opt->{end};
+#push @args, "-c copy"; # not compatible with precise seek
+push @args, "-strict -2";
+push @args, "$opt->{o}";
+my $cmd = join " ",@args;
+say $cmd;
+system($cmd) unless $opt->{n};
