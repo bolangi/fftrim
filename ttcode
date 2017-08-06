@@ -18,43 +18,41 @@ mkdir $destdir unless -e $destdir;
 my @lines = grep{ ! /^#/} split "\n", qx( cat ./CONTENTS);
 my $is_error;
 process_lines(); # check for errors;
-say("Errors found. Fix CONTENTS files and try again."), exit if $is_error;
+say(STDERR "Errors found. Fix CONTENTS files and try again."), exit if $is_error;
 process_lines("really do it!"); # unless $test
 
 sub process_lines { 
 	my $do = shift;
 	foreach my $line (@lines){
 		#my $colons = $line =~ tr/:/:/;
-		$do or say "line: $line";
+		say STDERR "line: $line";
 		#die "too many colons in text!!- $line" if $colons > 1 ;
 		my ($source_files, $dest, $start, $end) = split /\s+:\s+/, $line;
 		my @source_files = split " ", $source_files;
-		$do or say qq(no destination for source files "$source_files". Using source name.) if not $dest;
+		say STDERR qq(no destination for source files "$source_files". Using source name.) if not $dest;
 		$dest //= $source_files[0];
 		$dest = dest_filename($dest);
-		$do or say "source files: @source_files";
-		$do or say "destination: $dest";
-		$do or say "start time: $start";
-		$do or say "end time: $end";
-		say(qq(no source files in line!! $line)), $is_error++, if not @source_files;
+		say STDERR "source files: @source_files";
+		say STDERR "destination: $dest";
+		say STDERR "start time: $start";
+		say STDERR "end time: $end";
+		say(STDERR qq(no source files in line!! $line)), $is_error++, if not @source_files;
 		my @missing = grep { ! -r } @source_files;
-		say(qq(missing source files: @missing)), $is_error++, if @missing;
+		say(STDERR qq(missing source files: @missing)), $is_error++, if @missing;
 
-		# skip processing if any error
-		next if $is_error or !$do;
+		next if $is_error;
 		if (@source_files > 1)
 		{
 			my $temp_file = dest_filename($source_files[0]);
-			say "temp file: $temp_file";
+			say STDERR "temp file: $temp_file";
 			concatenate_video($temp_file, @source_files);
-			trim_video($temp_file, dest_filename($dest), $start, $end);
-			compress_video($temp_file, final_dest($dest));	
+			trim_video(dest_filename($dest), $temp_file, $start, $end);
 		} 
 		else 
 		{ 
 			trim_video($source_files[0], dest_filename($dest), $start, $end);
-			compress_video($source_files[0], final_dest($dest));
 		}
+			compress_video(dest_filename($dest), final_dest($dest));	
 	}
 }
 sub dest_filename { 
@@ -62,10 +60,10 @@ sub dest_filename {
 	$file =~ s/\.(mov|m2v|mts|mp4)$//i;
 	$file .= '.mp4';
 	if (-e $file)
-	{ 	say "$file: file exists, adding underscore to name";
+	{ 	say STDERR "$file: file exists, adding underscore to name";
 		$file =~ s/\.mp4$/_.mp4/;
+		$file = dest_filename($file); # add another underscore if necessary
 	}
-	$file = dest_filename($file); # add another underscore of necessary
 	$file
 }
 sub final_dest { "$destdir/$_[0]" }
@@ -76,22 +74,23 @@ sub concatenate_video {
 	$temp .= ".mp4" unless $temp =~ /mp4$/;
 	my $parts = join '|', @sources;
 	my $cmd = qq(ffmpeg -i concat:"$parts" -codec copy $temp);
-	say "concatenating: @sources -> $temp";
+	say STDERR "concatenating: @sources -> $temp";
 	say $cmd;
-	system $cmd unless $test;
+	#system $cmd unless $test;
 }
 sub trim_video {
 	my ($input, $output, $start, $end) = @_;
-	my $cmd = "trimp4 -i $input -o $output ";
+	my $cmd = "trimvideo -i $input -o $output ";
 	$start //= 0;
 	$cmd .= "--start $start ";
-	$cmd .= "--end $end ";
-	$cmd .= "-n" if $test;
+	$cmd .= "--end $end " if defined $end;
+	$cmd .= "-n ";
+	say $cmd;
 	system($cmd);
 }
 sub compress_video {
 	my ($inputfile, $outputfile) = @_;
-	say "compressing $inputfile -> $outputfile";
+	say STDERR "compressing $inputfile -> $outputfile";
 	my $cmd = <<CMD;
 	HandBrakeCLI
 		-i "$inputfile"
@@ -123,6 +122,6 @@ CMD
 	$cmd =~ s/\n/ \\\n/sg; 	# add end-of-line backslashes
 	$cmd =~ s/.$//; 		# except last line
 	say $cmd;
-	system $cmd unless $test;
+	#system $cmd unless $test;
 }
 __END__
