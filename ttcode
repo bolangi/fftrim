@@ -1,0 +1,128 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use autodie ':all';
+use feature 'say';
+my ($test) = @ARGV;
+
+## commented lines are dropped
+#00000.MTS
+## two files are to be combined CONTENTS format:
+# 00001.MTS 00002.MTS : S5-D01 Orly group session with three 3mo babies : 0:15 : 1:03:15
+
+my $destdir = 'done';
+mkdir $destdir unless -e $destdir;
+-d $destdir or die "$destdir is not a directory!";
+
+# remove column 1 commented lines
+my @lines = grep{ ! /^#/} split "\n", qx( cat ./CONTENTS);
+my $is_error;
+process_lines(); # check for errors;
+say("Errors found. Fix CONTENTS files and try again."), exit if $is_error;
+process_lines("really do it!"); # unless $test
+
+sub process_lines { 
+	my $do = shift;
+	foreach my $line (@lines){
+		#my $colons = $line =~ tr/:/:/;
+		$do or say "line: $line";
+		#die "too many colons in text!!- $line" if $colons > 1 ;
+		my ($source_files, $dest, $start, $end) = split /\s+:\s+/, $line;
+		my @source_files = split " ", $source_files;
+		$do or say qq(no destination for source files "$source_files". Using source name.) if not $dest;
+		$dest //= $source_files[0];
+		$dest = dest_filename($dest);
+		$do or say "source files: @source_files";
+		$do or say "destination: $dest";
+		$do or say "start time: $start";
+		$do or say "end time: $end";
+		say(qq(no source files in line!! $line)), $is_error++, if not @source_files;
+		my @missing = grep { ! -r } @source_files;
+		say(qq(missing source files: @missing)), $is_error++, if @missing;
+
+		# skip processing if any error
+		next if $is_error or !$do;
+		if (@source_files > 1)
+		{
+			my $temp_file = dest_filename($source_files[0]);
+			say "temp file: $temp_file";
+			concatenate_video($temp_file, @source_files);
+			trim_video($temp_file, dest_filename($dest), $start, $end);
+			compress_video($temp_file, final_dest($dest));	
+		} 
+		else 
+		{ 
+			trim_video($source_files[0], dest_filename($dest), $start, $end);
+			compress_video($source_files[0], final_dest($dest));
+		}
+	}
+}
+sub dest_filename { 
+	my $file = shift;
+	$file =~ s/\.(mov|m2v|mts|mp4)$//i;
+	$file .= '.mp4';
+	if (-e $file)
+	{ 	say "$file: file exists, adding underscore to name";
+		$file =~ s/\.mp4$/_.mp4/;
+	}
+	$file = dest_filename($file); # add another underscore of necessary
+	$file
+}
+sub final_dest { "$destdir/$_[0]" }
+
+sub concatenate_video {
+	my ($temp, @sources) = @_;
+	# force to mp4
+	$temp .= ".mp4" unless $temp =~ /mp4$/;
+	my $parts = join '|', @sources;
+	my $cmd = qq(ffmpeg -i concat:"$parts" -codec copy $temp);
+	say "concatenating: @sources -> $temp";
+	say $cmd;
+	system $cmd unless $test;
+}
+sub trim_video {
+	my ($input, $output, $start, $end) = @_;
+	my $cmd = "trimp4 -i $input -o $output ";
+	$start //= 0;
+	$cmd .= "--start $start ";
+	$cmd .= "--end $end ";
+	$cmd .= "-n" if $test;
+	system($cmd);
+}
+sub compress_video {
+	my ($inputfile, $outputfile) = @_;
+	say "compressing $inputfile -> $outputfile";
+	my $cmd = <<CMD;
+	HandBrakeCLI
+		-i "$inputfile"
+		-o "$outputfile"
+		--optimize # for streaming
+		--encoder x264
+		# --x264-profile baseline # handbrake chooses this 
+		--x264-tune film
+		--x264-preset fast
+		--quality 24 # single-pass constate-rate factor (CRF)
+		--vfr
+		--width 512
+		--height 288
+		--loose-anamorphic
+		--loose-crop
+		#--modulus 16 # default increment for frame dimensions
+		--keep-display-aspect
+		--encopts cabac=0:ref=2:me=umh:bframes=0:weightp=0:subme=6:8x8dct=0:trellis=0
+		# --decomb     # probably not needed
+		# --detelecine # -ditto-
+		--aencoder av_aac
+		--drc # dynamic range control 
+		--ab 80 # audio bitrate kbps
+		--arate 24 # audio sample rate kHz
+CMD
+	$cmd =~ s/^\s+//mg;  	# remove initial spaces in lines
+	$cmd =~ s/#.*$//mg; 	# remove comments
+	$cmd =~ s/^\s*\n//mg; 	# remove blank lines
+	$cmd =~ s/\n/ \\\n/sg; 	# add end-of-line backslashes
+	$cmd =~ s/.$//; 		# except last line
+	say $cmd;
+	system $cmd unless $test;
+}
+__END__
