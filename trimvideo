@@ -14,10 +14,9 @@ my ($opt, $usage) = describe_options(
 print($usage->text), exit if $opt->{help} or ! keys %$opt;
 $opt->{i} and $opt->{o} or say("input or output file not specified, aborting"), exit;
 my @args = ('ffmpeg');
-push @args, "-ss $opt->{start}" if defined $opt->{start};
+push @args, "-ss $opt->{start}" if $opt->{start};
 push @args, "-i $opt->{i}";
 push @args, "-to $opt->{end}" if defined $opt->{end};
-push @args, "-c copy" if not $opt->{end} and not $opt->{start};
 push @args, "-strict -2";
 push @args, "$opt->{o}";
 my $cmd = join " ",@args;

@@ -24,9 +24,8 @@ process_lines("really do it!"); # unless $test
 sub process_lines { 
 	my $do = shift;
 	foreach my $line (@lines){
-		#my $colons = $line =~ tr/:/:/;
+		$line =~ s/\s+$//;
 		say STDERR "line: $line";
-		#die "too many colons in text!!- $line" if $colons > 1 ;
 		my ($source_files, $dest, $start, $end) = split /\s+:\s+/, $line;
 		my @source_files = split " ", $source_files;
 		say STDERR qq(no destination for source files "$source_files". Using source name.) if not $dest;
@@ -80,13 +79,22 @@ sub concatenate_video {
 }
 sub trim_video {
 	my ($input, $output, $start, $end) = @_;
-	my $cmd = "trimvideo -i $input -o $output ";
+	# we don't need to transcode if no trimming and input is already mp4
+	if (! $start and ! $end and $input =~ /\.mp4$/){
+		if ( $test )
+			 { say "symlinking $input as $output" }
+		else { symlink($input, $output) }
+	}
+	else {
+	my @args = "trimvideo -i $input -o $output";
 	$start //= 0;
-	$cmd .= "--start $start ";
-	$cmd .= "--end $end " if defined $end;
-	$cmd .= "-n ";
+	push @args, "--start $start" if $start;
+	push @args, "--end $end " if $end;
+	push @args, "-n " if $test;
+	my $cmd = join " ", @args;
 	say $cmd;
 	system($cmd);
+	}
 }
 sub compress_video {
 	my ($inputfile, $outputfile) = @_;
