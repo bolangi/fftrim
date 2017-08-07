@@ -31,6 +31,8 @@ sub process_lines {
 		say STDERR qq(no destination for source files "$source_files". Using source name.) if not $dest;
 		$dest //= $source_files[0];
 		$dest = dest_filename($dest);
+		{
+		no warnings 'uninitialized';
 		say STDERR "source files: @source_files";
 		say STDERR "destination: $dest";
 		say STDERR "start time: $start";
@@ -38,6 +40,7 @@ sub process_lines {
 		say(STDERR qq(no source files in line!! $line)), $is_error++, if not @source_files;
 		my @missing = grep { ! -r } @source_files;
 		say(STDERR qq(missing source files: @missing)), $is_error++, if @missing;
+		}
 
 		next if $is_error;
 		if (@source_files > 1)
@@ -45,13 +48,13 @@ sub process_lines {
 			my $temp_file = dest_filename($source_files[0]);
 			say STDERR "temp file: $temp_file";
 			concatenate_video($temp_file, @source_files);
-			trim_video(dest_filename($dest), $temp_file, $start, $end);
+			compress_video($temp_file, $dest);	
 		} 
 		else 
 		{ 
-			trim_video($source_files[0], dest_filename($dest), $start, $end);
+			compress_video($source_files[0], $dest);	
 		}
-			compress_video(dest_filename($dest), final_dest($dest));	
+			trim_video($dest, final_dest($dest), $start, $end);
 	}
 }
 sub dest_filename { 
@@ -75,15 +78,14 @@ sub concatenate_video {
 	my $cmd = qq(ffmpeg -i concat:"$parts" -codec copy $temp);
 	say STDERR "concatenating: @sources -> $temp";
 	say $cmd;
-	#system $cmd unless $test;
+	system $cmd unless $test;
 }
 sub trim_video {
 	my ($input, $output, $start, $end) = @_;
 	# we don't need to transcode if no trimming and input is already mp4
 	if (! $start and ! $end and $input =~ /\.mp4$/){
-		if ( $test )
-			 { say "symlinking $input as $output" }
-		else { symlink($input, $output) }
+		say "moving unchanged file $input to $output";
+		rename($input, $output) if not $test;
 	}
 	else {
 	my @args = "trimvideo -i $input -o $output";
@@ -120,7 +122,7 @@ sub compress_video {
 		# --decomb     # probably not needed
 		# --detelecine # -ditto-
 		--aencoder av_aac
-		--drc # dynamic range control 
+		#--drc 1 dynamic range control 
 		--ab 80 # audio bitrate kbps
 		--arate 24 # audio sample rate kHz
 CMD
@@ -130,6 +132,6 @@ CMD
 	$cmd =~ s/\n/ \\\n/sg; 	# add end-of-line backslashes
 	$cmd =~ s/.$//; 		# except last line
 	say $cmd;
-	#system $cmd unless $test;
+	system $cmd unless $test;
 }
 __END__
