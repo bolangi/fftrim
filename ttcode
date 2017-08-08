@@ -10,7 +10,7 @@ my ($test) = @ARGV;
 ## two files are to be combined CONTENTS format:
 # 00001.MTS 00002.MTS : S5-D01 Orly group session with three 3mo babies : 0:15 : 1:03:15
 
-my $destdir = 'done';
+my $destdir = '../final';
 mkdir $destdir unless -e $destdir;
 -d $destdir or die "$destdir is not a directory!";
 
