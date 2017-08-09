@@ -89,20 +89,22 @@ sub compress_and_trim_video {
 -tune:v film
 -s:v 640x360
 -c:a aac
--b:a 64k
--ac 1
+-b:a 80k
+-ac 2
+-ar 24000
 -level 3
 -strict -2
 -copyts
 PARAMS
 	$encoding_params =~ s/\n/ /g;
 	my @args = "ffmpeg";
-	push @args, "-i $input";
 	push @args, "-ss $start"; 
+	push @args, "-i $input";
 	push @args, "-to $end" if $end;
 	push @args, $encoding_params;
 	push @args, $output;
 	my $cmd = join " ",@args;
 	say $cmd;
+	system $cmd unless $test
 }
 __END__
