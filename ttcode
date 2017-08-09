@@ -19,7 +19,7 @@ my @lines = grep{ ! /^#/} split "\n", qx( cat ./CONTENTS);
 my $is_error;
 process_lines(); # check for errors;
 say(STDERR "Errors found. Fix CONTENTS files and try again."), exit if $is_error;
-process_lines("really do it!"); # unless $test
+process_lines("really do it!"); # but still may be a test
 
 sub process_lines { 
 	my $do = shift;
@@ -42,7 +42,7 @@ sub process_lines {
 		say(STDERR qq(missing source files: @missing)), $is_error++, if @missing;
 		}
 
-		next if $is_error;
+		next unless $do;
 		if (@source_files > 1)
 		{
 			my $temp_file = dest_filename($source_files[0]);
