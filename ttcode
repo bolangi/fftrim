@@ -47,14 +47,15 @@ sub process_lines {
 		{
 			my $temp_file = dest_filename($source_files[0]);
 			say STDERR "temp file: $temp_file";
-			concatenate_video($temp_file, @source_files);
-			compress_video($temp_file, $dest);	
+			concatenate_video($temp_file, @source_files) unless -e $temp_file;
+			compress_video($temp_file, $dest) unless -e $dest;
 		} 
 		else 
 		{ 
-			compress_video($source_files[0], $dest);	
+			compress_video($source_files[0], $dest)	unless -e $dest;
 		}
-			trim_video($dest, final_dest($dest), $start, $end);
+			my $final = final_dest($dest); 
+			trim_video($dest, $final, $start, $end) unless -e $final;
 	}
 }
 sub dest_filename { 
