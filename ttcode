@@ -43,17 +43,19 @@ sub process_lines {
 		}
 
 		next unless $do;
+		my $compression_source;
 		if (@source_files > 1)
 		{
 			my $temp_file = dest_filename($source_files[0]);
 			say STDERR "temp file: $temp_file";
 			concatenate_video($temp_file, @source_files) unless -e $temp_file;
-			compress_video($temp_file, $dest) unless -e $dest;
+			$compression_source = $temp_file;
 		} 
 		else 
 		{ 
-			compress_video($source_files[0], $dest)	unless -e $dest;
+			$compression_source = $source_files[0];
 		}
+			compress_video($compression_source, $dest) unless -e $dest;
 			my $final = final_dest($dest); 
 			trim_video($dest, $final, $start, $end) unless -e $final;
 	}
