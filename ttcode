@@ -56,7 +56,7 @@ sub process_lines {
 			$compression_source = $source_files[0];
 		}
 			compress_video($compression_source, $dest) unless -e $dest;
-			my $final = final_dest($dest); 
+			my $final = trim_target($dest); 
 			trim_video($dest, $final, $start, $end) unless -e $final;
 	}
 }
@@ -71,7 +71,7 @@ sub dest_filename {
 	}
 	$file
 }
-sub final_dest { "$finaldir/$_[0]" }
+sub trim_target { "$finaldir/$_[0]" }
 
 sub concatenate_video {
 	my ($temp, @sources) = @_;
