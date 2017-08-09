@@ -10,9 +10,9 @@ my ($test) = @ARGV;
 ## two files are to be combined CONTENTS format:
 # 00001.MTS 00002.MTS : S5-D01 Orly group session with three 3mo babies : 0:15 : 1:03:15
 
-my $destdir = '../final';
-mkdir $destdir unless -e $destdir;
--d $destdir or die "$destdir is not a directory!";
+my $finaldir = '../final';
+mkdir $finaldir unless -e $finaldir;
+-d $finaldir or die "$finaldir is not a directory!";
 
 # remove column 1 commented lines
 my @lines = grep{ ! /^#/} split "\n", qx( cat ./CONTENTS);
@@ -71,7 +71,7 @@ sub dest_filename {
 	}
 	$file
 }
-sub final_dest { "$destdir/$_[0]" }
+sub final_dest { "$finaldir/$_[0]" }
 
 sub concatenate_video {
 	my ($temp, @sources) = @_;
