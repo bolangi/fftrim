@@ -56,7 +56,7 @@ sub process_lines {
 			$compression_source = $source_files[0];
 		}
 			my $final = trim_target($target); 
-			trim_video($compression_source, $final, $start, $end);
+			compress_and_trim_video($compression_source, $final, $start, $end);
 	}
 }
 sub mp4_target { 
@@ -70,19 +70,17 @@ sub trim_target { "$finaldir/$_[0]" }
 sub concatenate_video {
 	my ($target, @sources) = @_;
 	say(STDERR "$target: file exists, skipping"), return if -e $target;
-	# force to mp4
-	$target .= ".mp4" unless $target =~ /mp4$/;
+	$target = mp4_target($target);
 	my $parts = join '|', @sources;
 	my $cmd = qq(ffmpeg -i concat:"$parts" -codec copy $target);
 	say STDERR "concatenating: @sources -> $target";
 	say $cmd;
 	system $cmd unless $test;
 }
-sub trim_video {
+sub compress_and_trim_video {
 	my ($input, $output, $start, $end) = @_;
 	say(STDERR "$output: file exists, skipping"), return if -e $output;
 	# we don't need to transcode if no trimming and input is already mp4
-
 	$start //= 0;
 	my $encoding_params = <<PARAMS;
 -c:v libx264
