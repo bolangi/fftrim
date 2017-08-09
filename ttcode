@@ -74,13 +74,13 @@ sub compression_target {
 sub trim_target { "$finaldir/$_[0]" }
 
 sub concatenate_video {
-	my ($temp, @sources) = @_;
-	say(STDERR "$temp: file exists, skipping"), return if -e $temp;
+	my ($target, @sources) = @_;
+	say(STDERR "$target: file exists, skipping"), return if -e $target;
 	# force to mp4
-	$temp .= ".mp4" unless $temp =~ /mp4$/;
+	$target .= ".mp4" unless $target =~ /mp4$/;
 	my $parts = join '|', @sources;
-	my $cmd = qq(ffmpeg -i concat:"$parts" -codec copy $temp);
-	say STDERR "concatenating: @sources -> $temp";
+	my $cmd = qq(ffmpeg -i concat:"$parts" -codec copy $target);
+	say STDERR "concatenating: @sources -> $target";
 	say $cmd;
 	system $cmd unless $test;
 }
