@@ -48,16 +48,16 @@ sub process_lines {
 		{
 			my $temp_file = compression_target($source_files[0]);
 			say STDERR "temp file: $temp_file";
-			concatenate_video($temp_file, @source_files) unless -e $temp_file;
+			concatenate_video($temp_file, @source_files);
 			$compression_source = $temp_file;
 		} 
 		else 
 		{ 
 			$compression_source = $source_files[0];
 		}
-			compress_video($compression_source, $compression_target) unless -e $compression_target;
+			compress_video($compression_source, $compression_target);
 			my $final = trim_target($compression_target); 
-			trim_video($compression_target, $final, $start, $end) unless -e $final;
+			trim_video($compression_target, $final, $start, $end);
 	}
 }
 sub compression_target { 
@@ -75,6 +75,7 @@ sub trim_target { "$finaldir/$_[0]" }
 
 sub concatenate_video {
 	my ($temp, @sources) = @_;
+	say(STDERR "$temp: file exists, skipping"), return if -e $temp;
 	# force to mp4
 	$temp .= ".mp4" unless $temp =~ /mp4$/;
 	my $parts = join '|', @sources;
@@ -85,6 +86,7 @@ sub concatenate_video {
 }
 sub trim_video {
 	my ($input, $output, $start, $end) = @_;
+	say(STDERR "$output: file exists, skipping"), return if -e $output;
 	# we don't need to transcode if no trimming and input is already mp4
 	if (! $start and ! $end and $input =~ /\.mp4$/){
 		say "moving unchanged file $input to $output";
@@ -103,6 +105,7 @@ sub trim_video {
 }
 sub compress_video {
 	my ($inputfile, $outputfile) = @_;
+	say(STDERR "$outputfile: file exists, skipping"), return if -e $outputfile;
 	say STDERR "compressing $inputfile -> $outputfile";
 	my $cmd = <<CMD;
 	HandBrakeCLI
