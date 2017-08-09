@@ -62,13 +62,8 @@ sub process_lines {
 }
 sub mp4_target { 
 	my $file = shift;
-	$file =~ s/\.(mov|m2v|mts|mp4)$//i;
+	$file =~ s/\.(mov|m2v|mts)$//i;
 	$file .= '.mp4';
-	if (-e $file)
-	{ 	say STDERR "$file: file exists, adding underscore to name";
-		$file =~ s/\.mp4$/_.mp4/;
-		$file = mp4_target($file); # add another underscore if necessary
-	}
 	$file
 }
 sub trim_target { "$finaldir/$_[0]" }
