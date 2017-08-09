@@ -55,9 +55,8 @@ sub process_lines {
 		{ 
 			$compression_source = $source_files[0];
 		}
-			compress_video($compression_source, $target);
 			my $final = trim_target($target); 
-			trim_video($target, $final, $start, $end);
+			trim_video($compression_source, $final, $start, $end);
 	}
 }
 sub mp4_target { 
@@ -83,56 +82,29 @@ sub trim_video {
 	my ($input, $output, $start, $end) = @_;
 	say(STDERR "$output: file exists, skipping"), return if -e $output;
 	# we don't need to transcode if no trimming and input is already mp4
-	if (! $start and ! $end and $input =~ /\.mp4$/){
-		say "moving unchanged file $input to $output";
-		rename($input, $output) if not $test;
-	}
-	else {
-	my @args = "trimvideo -i $input -o $output";
+
 	$start //= 0;
-	push @args, "--start $start" if $start;
-	push @args, "--end $end " if $end;
-	push @args, "-n " if $test;
-	my $cmd = join " ", @args;
+	my $encoding_params = <<PARAMS;
+-c:v libx264
+-preset:v medium
+-profile:v main
+-tune:v film
+-s:v 640x360
+-c:a aac
+-b:a 64k
+-ac 1
+-level 3
+-strict -2
+-copyts
+PARAMS
+	$encoding_params =~ s/\n/ /g;
+	my @args = "ffmpeg";
+	push @args, "-i $input";
+	push @args, "-ss $start"; 
+	push @args, "-to $end" if $end;
+	push @args, $encoding_params;
+	push @args, $output;
+	my $cmd = join " ",@args;
 	say $cmd;
-	system($cmd);
-	}
-}
-sub compress_video {
-	my ($inputfile, $outputfile) = @_;
-	say(STDERR "$outputfile: file exists, skipping"), return if -e $outputfile;
-	say STDERR "compressing $inputfile -> $outputfile";
-	my $cmd = <<CMD;
-	HandBrakeCLI
-		-i "$inputfile"
-		-o "$outputfile"
-		--optimize # for streaming
-		--encoder x264
-		# --x264-profile baseline # handbrake chooses this 
-		--x264-tune film
-		--x264-preset fast
-		--quality 24 # single-pass constate-rate factor (CRF)
-		--vfr
-		--width 512
-		--height 288
-		--loose-anamorphic
-		--loose-crop
-		#--modulus 16 # default increment for frame dimensions
-		--keep-display-aspect
-		--encopts cabac=0:ref=2:me=umh:bframes=0:weightp=0:subme=6:8x8dct=0:trellis=0
-		# --decomb     # probably not needed
-		# --detelecine # -ditto-
-		--aencoder av_aac
-		#--drc 1 dynamic range control 
-		--ab 80 # audio bitrate kbps
-		--arate 24 # audio sample rate kHz
-CMD
-	$cmd =~ s/^\s+//mg;  	# remove initial spaces in lines
-	$cmd =~ s/#.*$//mg; 	# remove comments
-	$cmd =~ s/^\s*\n//mg; 	# remove blank lines
-	$cmd =~ s/\n/ \\\n/sg; 	# add end-of-line backslashes
-	$cmd =~ s/.$//; 		# except last line
-	say $cmd;
-	system $cmd unless $test;
 }
 __END__
