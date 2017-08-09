@@ -26,15 +26,15 @@ sub process_lines {
 	foreach my $line (@lines){
 		$line =~ s/\s+$//;
 		say STDERR "line: $line";
-		my ($source_files, $dest, $start, $end) = split /\s+:\s+/, $line;
+		my ($source_files, $compression_target, $start, $end) = split /\s+:\s+/, $line;
 		my @source_files = split " ", $source_files;
-		say STDERR qq(no destination for source files "$source_files". Using source name.) if not $dest;
-		$dest //= $source_files[0];
-		$dest = dest_filename($dest);
+		say STDERR qq(no compression target for source files "$source_files". Using source name.) if not $compression_target;
+		$compression_target //= $source_files[0];
+		$compression_target = compression_target($compression_target);
 		{
 		no warnings 'uninitialized';
 		say STDERR "source files: @source_files";
-		say STDERR "destination: $dest";
+		say STDERR "compression target: $compression_target";
 		say STDERR "start time: $start";
 		say STDERR "end time: $end";
 		say(STDERR qq(no source files in line!! $line)), $is_error++, if not @source_files;
@@ -46,7 +46,7 @@ sub process_lines {
 		my $compression_source;
 		if (@source_files > 1)
 		{
-			my $temp_file = dest_filename($source_files[0]);
+			my $temp_file = compression_target($source_files[0]);
 			say STDERR "temp file: $temp_file";
 			concatenate_video($temp_file, @source_files) unless -e $temp_file;
 			$compression_source = $temp_file;
@@ -55,19 +55,19 @@ sub process_lines {
 		{ 
 			$compression_source = $source_files[0];
 		}
-			compress_video($compression_source, $dest) unless -e $dest;
-			my $final = trim_target($dest); 
-			trim_video($dest, $final, $start, $end) unless -e $final;
+			compress_video($compression_source, $compression_target) unless -e $compression_target;
+			my $final = trim_target($compression_target); 
+			trim_video($compression_target, $final, $start, $end) unless -e $final;
 	}
 }
-sub dest_filename { 
+sub compression_target { 
 	my $file = shift;
 	$file =~ s/\.(mov|m2v|mts|mp4)$//i;
 	$file .= '.mp4';
 	if (-e $file)
 	{ 	say STDERR "$file: file exists, adding underscore to name";
 		$file =~ s/\.mp4$/_.mp4/;
-		$file = dest_filename($file); # add another underscore if necessary
+		$file = compression_target($file); # add another underscore if necessary
 	}
 	$file
 }
