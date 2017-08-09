@@ -70,7 +70,7 @@ sub trim_target { "$finaldir/$_[0]" }
 sub concatenate_video {
 	my ($target, @sources) = @_;
 	say(STDERR "$target: file exists, skipping"), return if -e $target;
-	$target = mp4_target($target);
+	$target .= ".mp4" unless $target =~ /mp4$/;
 	my $parts = join '|', @sources;
 	my $cmd = qq(ffmpeg -i concat:"$parts" -codec copy $target);
 	say STDERR "concatenating: @sources -> $target";
