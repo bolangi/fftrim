@@ -19,6 +19,7 @@ mkdir $finaldir unless -e $finaldir;
 my (@lines) = split "\n", qx( cat ./CONTENTS);
 @lines = grep{ ! /^#/ and ! /^\s*$/ }  @lines;
 my $is_error;
+
 process_lines(); # check for errors;
 say(STDERR "Errors found. Fix CONTENTS files and try again."), exit if $is_error;
 process_lines("really do it!"); # but still may be a test
@@ -42,7 +43,7 @@ sub process_lines {
 		$target //= $source_files[0];
 		$target = mp4_target($target);
 		my $ext = 'mp4';
-		$target = generate_target(target => $target, ext => $ext, from => \@source_files);
+		#$target = generate_target(target => $target, ext => $ext, from => \@source_files);
 		{
 		no warnings 'uninitialized';
 		say STDERR "source files: @source_files";
@@ -68,8 +69,12 @@ sub process_lines {
 			$compression_source = $source_files[0];
 		}
 			my $final = trim_target($target); 
-			compress_and_trim_video($compression_source,
-$final, hmsplus($start, \@source_files), hmsplus($end, \@source_files));
+			compress_and_trim_video(
+				$compression_source,
+				$final, 
+				hmsplus($start, \@source_files), 
+				hmsplus($end, 	\@source_files),
+			);
 	}
 }
 sub generate_target {
@@ -93,6 +98,7 @@ sub is_audio { media_type ne 'video' }
 sub mp4_target { 
 	my $file = shift;
 	$file =~ s/\.(mov|m2v|mts)$//i;
+	$file .= '.mp4' unless $file =~ /\.mp4$/;
 	$file
 }
 sub trim_target { "$finaldir/$_[0]" }
@@ -141,6 +147,7 @@ PARAMS
 sub seconds {
 	my $hms = shift;
 	my $count = $hms =~ tr/:/:/;
+	$count //= 0;
 	# case 1, seconds only
 	if (! $count)
 	{
@@ -177,9 +184,15 @@ sub hms {
 sub hmsplus {
 	my ($pos, $sources) = @_;
 	# 1+2+24:15
-	my @s = $pos =~ /(\d\+)+([^+]+)$/;
-	my $hms = pop @s;
-	say "s: @s, hms: $hms";
+	my (@skip_segments) = $pos =~ /(\d\+)?(\d\+)?(\d\+)?([^+]+)$/;
+	@skip_segments = grep{$_}map{ do { s/\+\s*//g; $_} if $_ } @skip_segments;
+	my $cutpoint = (pop @skip_segments) || 0;
+	my $total_length = 0;
+	$total_length += seconds($cutpoint);
+	for (0 .. scalar @$sources-1){
+		$total_length += $length{$sources->[$_]} if $_ < @skip_segments;
+	}
+	hms($total_length)
 }
 1 # obligatory return value
 	
