@@ -72,8 +72,8 @@ sub process_lines {
 			compress_and_trim_video(
 				$compression_source,
 				$final, 
-				hmsplus($start, \@source_files), 
-				hmsplus($end, 	\@source_files),
+				decode_cutpoint($start, \@source_files), 
+				decode_cutpoint($end, 	\@source_files),
 			);
 	}
 }
@@ -181,7 +181,7 @@ sub hms {
 	$output .= $seconds;
 	$output
 }
-sub hmsplus {
+sub decode_cutpoint {
 	my ($pos, $sources) = @_;
 	# 1+2+24:15
 	my (@skip_segments) = $pos =~ /(\d\+)?(\d\+)?(\d\+)?([^+]+)$/;
