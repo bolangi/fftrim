@@ -19,11 +19,6 @@ mkdir $finaldir unless -e $finaldir;
 my (@lines) = split "\n", qx( cat ./CONTENTS);
 @lines = grep{ ! /^#/ and ! /^\s*$/ }  @lines;
 my $is_error;
-
-
-say seconds("10:41");
-
-exit;
 process_lines(); # check for errors;
 say(STDERR "Errors found. Fix CONTENTS files and try again."), exit if $is_error;
 process_lines("really do it!"); # but still may be a test
@@ -35,11 +30,13 @@ sub process_lines {
 		say STDERR "line: $line";
 		my ($source_files, $target, $start, $end) = split /\s+:\s+/, $line;
 		my @source_files = split " ", $source_files;
+		for (@source_files){
 		if ( ! defined $length{$_} )
-		{
-			my $len = qx(video-length "$_");
-			chomp $len;
-			$length{$_} = seconds($len);
+			{
+				my $len = qx(video-length "$_");
+				chomp $len;
+				$length{$_} = seconds($len);
+			}
 		}
 		say STDERR qq(no target for source files "$source_files". Using source name.) if not $target;
 		$target //= $source_files[0];
@@ -71,7 +68,8 @@ sub process_lines {
 			$compression_source = $source_files[0];
 		}
 			my $final = trim_target($target); 
-			compress_and_trim_video($compression_source, $final, hms($start, \@source_files), hms($end, \@source_files));
+			compress_and_trim_video($compression_source,
+$final, hmsplus($start, \@source_files), hmsplus($end, \@source_files));
 	}
 }
 sub generate_target {
@@ -163,6 +161,20 @@ sub seconds {
 	else { die "$hms: something wrong, detected too many ':' characters" }
 }
 sub hms {
+	my $seconds = shift;
+	my $whole_hours = int( $seconds  / 3600 );
+	#say "whole hours: $whole_hours";
+	$seconds -= $whole_hours * 3600;
+	my $whole_minutes = int( $seconds / 60 );
+	#say "whole minutes: $whole_minutes";
+	$seconds -= $whole_minutes * 60;
+	my $output;
+	$output .=  "$whole_hours:" if $whole_hours;
+	$output .=  "$whole_minutes:" if $whole_minutes;
+	$output .= $seconds;
+	$output
+}
+sub hmsplus {
 	my ($pos, $sources) = @_;
 	# 1+2+24:15
 	my @s = $pos =~ /(\d\+)+([^+]+)$/;
