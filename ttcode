@@ -10,6 +10,7 @@ my ($test) = @ARGV;
 ## two files are to be combined CONTENTS format:
 # 00001.MTS 00002.MTS : S5-D01 Orly group session with three 3mo babies : 0:15 : 1:03:15
 
+my %length;
 my $finaldir = '../final';
 mkdir $finaldir unless -e $finaldir;
 -d $finaldir or die "$finaldir is not a directory!";
@@ -18,6 +19,11 @@ mkdir $finaldir unless -e $finaldir;
 my (@lines) = split "\n", qx( cat ./CONTENTS);
 @lines = grep{ ! /^#/ and ! /^\s*$/ }  @lines;
 my $is_error;
+
+
+say seconds("10:41");
+
+exit;
 process_lines(); # check for errors;
 say(STDERR "Errors found. Fix CONTENTS files and try again."), exit if $is_error;
 process_lines("really do it!"); # but still may be a test
@@ -29,9 +35,17 @@ sub process_lines {
 		say STDERR "line: $line";
 		my ($source_files, $target, $start, $end) = split /\s+:\s+/, $line;
 		my @source_files = split " ", $source_files;
+		if ( ! defined $length{$_} )
+		{
+			my $len = qx(video-length "$_");
+			chomp $len;
+			$length{$_} = seconds($len);
+		}
 		say STDERR qq(no target for source files "$source_files". Using source name.) if not $target;
 		$target //= $source_files[0];
 		$target = mp4_target($target);
+		my $ext = 'mp4';
+		$target = generate_target(target => $target, ext => $ext, from => \@source_files);
 		{
 		no warnings 'uninitialized';
 		say STDERR "source files: @source_files";
@@ -57,13 +71,30 @@ sub process_lines {
 			$compression_source = $source_files[0];
 		}
 			my $final = trim_target($target); 
-			compress_and_trim_video($compression_source, $final, $start, $end);
+			compress_and_trim_video($compression_source, $final, hms($start, \@source_files), hms($end, \@source_files));
 	}
 }
+sub generate_target {
+	my %args = @_;
+	$args{target} =~ s/\.(mov|m2v|mts)$//i;
+	my $ext = $args{ext};
+	$ext //=  is_video($args{from}) ? 'mp4' : 'mp3';
+	$ext
+}
+
+sub media_type {
+	my ($in) = @{+shift};
+	my ($ext) = lc( $in =~ /\.([a-z]{1,3})$/i );
+	say $ext;
+	return "video" if $ext =~ /mov|m2v|mts|mp4|dvi/ ;
+	return "audio" if $ext =~ /mp3|ogg|wav/ ;
+}
+sub is_video { media_type eq 'video' }
+sub is_audio { media_type ne 'video' }
+
 sub mp4_target { 
 	my $file = shift;
 	$file =~ s/\.(mov|m2v|mts)$//i;
-	$file .= '.mp4';
 	$file
 }
 sub trim_target { "$finaldir/$_[0]" }
@@ -109,4 +140,35 @@ PARAMS
 	say $cmd;
 	system $cmd unless $test
 }
+sub seconds {
+	my $hms = shift;
+	my $count = $hms =~ tr/:/:/;
+	# case 1, seconds only
+	if (! $count)
+	{
+		return $hms
+	}
+	elsif($count == 1)
+	{
+		# m:s
+	
+		my ($m,$s) = split ':', $hms;
+		return $m * 60 + $s
+	}
+	elsif($count == 2)
+	{
+		my ($h,$m,$s) = split ':', $hms;
+		return $h * 3600 + $m * 60 + $s
+	}
+	else { die "$hms: something wrong, detected too many ':' characters" }
+}
+sub hms {
+	my ($pos, $sources) = @_;
+	# 1+2+24:15
+	my @s = $pos =~ /(\d\+)+([^+]+)$/;
+	my $hms = pop @s;
+	say "s: @s, hms: $hms";
+}
+1 # obligatory return value
+	
 __END__
