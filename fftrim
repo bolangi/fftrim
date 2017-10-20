@@ -5,13 +5,43 @@ use autodie ':all';
 use feature 'say';
 my ($test) = @ARGV;
 
+#   fftrim
+#  FFmpeg::Trim
+
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+   '%c %o',
+   [ 'source-dir=s',  "source directory for video clips" ],
+   [ 'target-dir=s',"output directory for completed files" ],
+   [ 'n',      "simulate: show output commands but do not run them" ],
+   [ 'help',   "print usage message and exit" ],
+ );
+print($usage->text), exit if $opt->{help} or ! keys %$opt;
+my $contents = 'CONTENTS';
+$contents = join_path($opt->{'source-dir'}), $contents;
+
+# I used the following directory layout
+# 20170815/
+#     |
+#     +----camera1
+#     | 
+#     +----final
+#         
 ## commented lines are dropped
 #00000.MTS
-## two files are to be combined CONTENTS format:
-# 00001.MTS 00002.MTS : S5-D01 Orly group session with three 3mo babies : 0:15 : 1:03:15
+#	CONTENTS format
+#
+#	00000.MTS 00001.MTS 00002.MTS : 20170815-1 : 0:15 : # 1+2+11:41
+#	three .MTS files are to be concatentated into
+#	intermediate file 00000.mp4, then trimmed and 
+#	compressed into ../final/20170815-1.mp4
+
+
+-e './CONTENTS' or die 'CONTENTS: file not found';
 
 my %length;
-my $finaldir = '../final';
+my $finaldir = $opt->{'target-dir'};
 mkdir $finaldir unless -e $finaldir;
 -d $finaldir or die "$finaldir is not a directory!";
 
@@ -29,7 +59,7 @@ sub process_lines {
 	foreach my $line (@lines){
 		$line =~ s/\s+$//;
 		say STDERR "line: $line";
-		my ($source_files, $target, $start, $end) = split /\s+:\s+/, $line;
+		my ($source_files, $target, $start, $end) = split /\s+[:|]\s+/, $line;
 		my @source_files = split " ", $source_files;
 		for (@source_files){
 		if ( ! defined $length{$_} )
@@ -75,6 +105,7 @@ sub process_lines {
 				decode_cutpoint($start, \@source_files), 
 				decode_cutpoint($end, 	\@source_files),
 			);
+	NEXT:   next;
 	}
 }
 sub generate_target {
@@ -118,20 +149,7 @@ sub compress_and_trim_video {
 	say(STDERR "$output: file exists, skipping"), return if -e $output;
 	# we don't need to transcode if no trimming and input is already mp4
 	$start //= 0;
-	my $encoding_params = <<PARAMS;
--c:v libx264
--preset:v medium
--profile:v main
--tune:v film
--s:v 640x360
--c:a aac
--b:a 80k
--ac 2
--ar 24000
--filter_complex aresample=24000
--level 3
--strict -2
--copyts
+	my $encoding_params = join '', <DATA>;
 PARAMS
 	$encoding_params =~ s/\n/ /g;
 	my @args = "ffmpeg";
@@ -184,16 +202,33 @@ sub hms {
 sub decode_cutpoint {
 	my ($pos, $sources) = @_;
 	# 1+2+24:15
-	my (@skip_segments) = $pos =~ /(\d\+)?(\d\+)?(\d\+)?([^+]+)$/;
-	@skip_segments = grep{$_}map{ do { s/\+\s*//g; $_} if $_ } @skip_segments;
-	my $cutpoint = (pop @skip_segments) || 0;
+	return unless $pos;
+	my (@segments) = $pos =~ /(\d\+)?(\d\+)?(\d\+)?([^+]+)$/;
+	@segments = grep{$_}map{ do { s/\+\s*//g; $_} if $_ } @segments;
+	my $cutpoint = (pop @segments) || 0;
 	my $total_length = 0;
 	$total_length += seconds($cutpoint);
 	for (0 .. scalar @$sources-1){
-		$total_length += $length{$sources->[$_]} if $_ < @skip_segments;
+		$total_length += $length{$sources->[$_]} if $_ < @segments;
 	}
 	hms($total_length)
 }
+sub join_path { join '/',@_ }
+
 1 # obligatory return value
 	
 __END__
+__DATA__
+-c:v libx264
+-preset:v medium
+-profile:v main
+-tune:v film
+-s:v 640x360
+-c:a aac
+-b:a 80k
+-ac 2
+-ar 24000
+-filter_complex aresample=24000
+-level 3
+-strict -2
+-copyts
