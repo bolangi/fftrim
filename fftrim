@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use autodie ':all';
 use feature 'say';
-my ($test) = @ARGV;
+
 
 #   fftrim
 #  FFmpeg::Trim
@@ -142,7 +142,7 @@ sub concatenate_video {
 	my $cmd = qq(ffmpeg -i concat:"$parts" -codec copy $target);
 	say STDERR "concatenating: @sources -> $target";
 	say $cmd;
-	system $cmd unless $test;
+	system $cmd unless $opt->{n};
 }
 sub compress_and_trim_video {
 	my ($input, $output, $start, $end) = @_;
@@ -160,7 +160,7 @@ PARAMS
 	push @args, $output;
 	my $cmd = join " ",@args;
 	say $cmd;
-	system $cmd unless $test
+	system $cmd unless $opt->{n}
 }
 sub seconds {
 	my $hms = shift;
