@@ -19,7 +19,10 @@ my ($opt, $usage) = describe_options(
  );
 print($usage->text), exit if $opt->{help} or ! keys %$opt;
 my $contents = 'CONTENTS';
-$contents = join_path($opt->{'source-dir'}), $contents;
+use Data::Dumper::Concise;
+say Dumper $opt;
+
+$contents = join_path($opt->{source_dir}, $contents);
 
 # I used the following directory layout
 # 20170815/
