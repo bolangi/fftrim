@@ -153,7 +153,6 @@ sub compress_and_trim_video {
 	# we don't need to transcode if no trimming and input is already mp4
 	$start //= 0;
 	my $encoding_params = join '', <DATA>;
-PARAMS
 	$encoding_params =~ s/\n/ /g;
 	my @args = "ffmpeg";
 	push @args, "-i $input";
