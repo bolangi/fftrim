@@ -35,6 +35,8 @@ $contents = join_path($opt->{source_dir}, $contents);
 #	intermediate file 00000.mp4, then trimmed and 
 #	compressed into ../final/20170815-1.mp4
 
+my $encoding_params = join '', <DATA>;
+$encoding_params =~ s/\n/ /g;
 
 -e './CONTENTS' or die 'CONTENTS: file not found';
 
@@ -146,8 +148,6 @@ sub compress_and_trim_video {
 	say(STDERR "$output: file exists, skipping"), return if -e $output;
 	# we don't need to transcode if no trimming and input is already mp4
 	$start //= 0;
-	my $encoding_params = join '', <DATA>;
-	$encoding_params =~ s/\n/ /g;
 	my @args = "ffmpeg";
 	push @args, "-i $input";
 	push @args, "-ss $start"; 
