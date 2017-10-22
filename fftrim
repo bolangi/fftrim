@@ -113,7 +113,7 @@ sub process_lines {
 }
 sub generate_target {
 	my %args = @_;
-	$args{target} =~ s/\.(mov|m2v|mts)$//i;
+	$args{target} =~ s/\.(mpg|mov|m2v|mts|dvi)$//i;
 	my $ext = $args{ext};
 	$ext //=  is_video($args{from}) ? 'mp4' : 'mp3';
 	$ext
@@ -123,7 +123,7 @@ sub media_type {
 	my ($in) = @{+shift};
 	my ($ext) = lc( $in =~ /\.([a-z]{1,3})$/i );
 	say $ext;
-	return "video" if $ext =~ /mov|m2v|mts|mp4|dvi/ ;
+	return "video" if $ext =~ /mpg|mov|m2v|mts|mp4|dvi/ ;
 	return "audio" if $ext =~ /mp3|ogg|wav/ ;
 }
 sub is_video { media_type eq 'video' }
