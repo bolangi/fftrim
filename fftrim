@@ -44,7 +44,7 @@ $contents = join_path($opt->{source_dir}, $contents);
 -e './CONTENTS' or die 'CONTENTS: file not found';
 
 my %length;
-my $finaldir = $opt->{'target-dir'};
+my $finaldir = $opt->{target_dir};
 mkdir $finaldir unless -e $finaldir;
 -d $finaldir or die "$finaldir is not a directory!";
 
