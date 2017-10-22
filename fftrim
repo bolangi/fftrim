@@ -219,7 +219,6 @@ sub join_path { join '/',@_ }
 
 1 # obligatory return value
 	
-__END__
 __DATA__
 -c:v libx264
 -preset:v medium
