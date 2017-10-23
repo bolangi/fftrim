@@ -74,7 +74,6 @@ sub process_lines {
 		$target //= $source_files[0];
 		$target = mp4_target($target);
 		my $ext = 'mp4';
-		#$target = generate_target(target => $target, ext => $ext, from => \@source_files);
 		{
 		no warnings 'uninitialized';
 		say STDERR "source files: @source_files";
@@ -100,21 +99,16 @@ sub process_lines {
 			$compression_source = $source_files[0];
 		}
 			my $final = trim_target($target); 
+			$start = decode_cutpoint($start, \@source_files);
+			$end = decode_cutpoint($end, \@source_files);
+			say STDERR "decoded start: $start, decoded end: $end";
 			compress_and_trim_video(
 				$compression_source,
 				$final, 
-				decode_cutpoint($start, \@source_files), 
-				decode_cutpoint($end, 	\@source_files),
+				$start,
+				$end
 			);
-	NEXT:   next;
 	}
-}
-sub generate_target {
-	my %args = @_;
-	$args{target} =~ s/\.(mpg|mov|m2v|mts|dvi)$//i;
-	my $ext = $args{ext};
-	$ext //=  is_video($args{from}) ? 'mp4' : 'mp3';
-	$ext
 }
 
 sub media_type {
