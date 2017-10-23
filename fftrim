@@ -11,6 +11,7 @@ my ($opt, $usage) = describe_options(
    [ 'source-dir=s',  "source directory for video clips" ],
    [ 'target-dir=s',"output directory for completed files" ],
    [ 'n',      "simulate: show output commands but do not run them" ],
+   [ 'm',      "simulate: show output commands omitting file checks" ],
    [ 'help',   "print usage message and exit" ],
  );
 print($usage->text), exit if $opt->{help} or ! keys %$opt;
@@ -211,6 +212,8 @@ sub decode_cutpoint {
 }
 sub join_path { join '/',@_ }
 
+sub simulate { $opt->{n} or $opt->{m} }
+sub file_exists { $opt->{m} ? 0 : -e $_[0] }
 1 # obligatory return value
 	
 __DATA__
