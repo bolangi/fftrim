@@ -9,7 +9,9 @@ use Getopt::Long::Descriptive;
 my ($opt, $usage) = describe_options(
    '%c %o',
    [ 'source-dir=s',  "source directory for video clips" ],
-   [ 'target-dir=s',"output directory for completed files" ],
+   [ 'target-dir=s',"target directory for completed files" ],
+   [ 'in=s',"input file"],
+   [ 'out=s',"output file"],
    [ 'n',      "simulate: show output commands but do not run them" ],
    [ 'm',      "simulate: show output commands omitting file checks" ],
    [ 'help',   "print usage message and exit" ],
@@ -36,8 +38,11 @@ $contents = join_path($opt->{source_dir}, $contents);
 #	intermediate file 00000.mp4, then trimmed and 
 #	compressed into ../final/20170815-1.mp4
 
+
+
 my $encoding_params = join '', <DATA>;
 $encoding_params =~ s/\n/ /g;
+compress_and_trim_video($opt->{in}, $opt->{out}), exit if $opt->{if} and $opt->{of};
 
 -e './CONTENTS' or die 'CONTENTS: file not found';
 
