@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use autodie ':all';
 use feature 'say';
+use Cwd;
 
 use Getopt::Long::Descriptive;
 
@@ -17,34 +18,23 @@ my ($opt, $usage) = describe_options(
    [ 'help',   "print usage message and exit" ],
  );
 print($usage->text), exit if $opt->{help} or ! keys %$opt;
+
+# 00000.MTS 00001.MTS 00002.MTS : 20170815-1 : 0:15 : # 1+2+11:41
+# three .MTS files are to be concatentated into
+# intermediate file 00000.mp4, then trimmed and 
+# compressed into ../final/20170815-1.mp4
+
+my $current_dir = getcwd;
+
 my $contents = 'CONTENTS';
 
 $contents = join_path($opt->{source_dir}, $contents);
-
-
-# I used the following directory layout
-# 20170815/
-#     |
-#     +----camera1
-#     | 
-#     +----final
-#         
-## commented lines are dropped
-#00000.MTS
-#	CONTENTS format
-#
-#	00000.MTS 00001.MTS 00002.MTS : 20170815-1 : 0:15 : # 1+2+11:41
-#	three .MTS files are to be concatentated into
-#	intermediate file 00000.mp4, then trimmed and 
-#	compressed into ../final/20170815-1.mp4
-
-
 
 my $encoding_params = join '', <DATA>;
 $encoding_params =~ s/\n/ /g;
 compress_and_trim_video($opt->{in}, $opt->{out}), exit if $opt->{if} and $opt->{of};
 
--e './CONTENTS' or die 'CONTENTS: file not found';
+-e $contents or die "$contents: file not found";
 
 my %length;
 my $finaldir = $opt->{target_dir};
@@ -52,13 +42,16 @@ mkdir $finaldir unless -e $finaldir;
 -d $finaldir or die "$finaldir is not a directory!";
 
 # remove column 1 commented lines
-my (@lines) = split "\n", qx( cat ./CONTENTS);
+my (@lines) = split "\n", qx( cat $contents);
 @lines = grep{ ! /^#/ and ! /^\s*$/ }  @lines;
 my $is_error;
 
+
+#chdir $opt->{source_dir};
 process_lines(); # check for errors;
 say(STDERR "Errors found. Fix CONTENTS files and try again."), exit if $is_error;
 process_lines("really do it!"); # but still may be a test
+#chdir $current_dir;
 
 sub process_lines { 
 	my $do = shift;
@@ -66,7 +59,7 @@ sub process_lines {
 		$line =~ s/\s+$//;
 		say STDERR "line: $line";
 		my ($source_files, $target, $start, $end) = split /\s+[:|]\s+/, $line;
-		my @source_files = split " ", $source_files;
+		my @source_files = map{ join_path($opt->{source_dir}, $_)} split " ", $source_files;
 		for (@source_files){
 		if ( ! defined $length{$_} )
 			{
