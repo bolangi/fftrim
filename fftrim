@@ -210,19 +210,18 @@ sub join_path { join '/',@_ }
 
 sub simulate { $opt->{n} or $opt->{m} }
 sub file_exists { $opt->{m} ? 0 : -e $_[0] }
-1 # obligatory return value
-	
+
 __DATA__
 -c:v libx264
 -preset:v medium
 -profile:v main
 -tune:v film
+-r 25
 -s:v 640x360
 -c:a aac
 -b:a 80k
 -ac 2
 -ar 24000
--filter_complex aresample=24000
 -level 3
 -strict -2
 -copyts
