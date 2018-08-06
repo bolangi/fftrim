@@ -8,7 +8,7 @@
 
 ### Batch mode
 
-    fftrim --source-dir raw --target-dir=done
+    fftrim --source-dir raw --target-dir done
 
 CONTROL file in raw/
 
