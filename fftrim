@@ -9,13 +9,16 @@ use Getopt::Long::Descriptive;
 
 my ($opt, $usage) = describe_options(
    '%c %o',
-   [ 'source-dir=s',  "source directory for video clips" ],
-   [ 'target-dir=s',"target directory for completed files" ],
-   [ 'in=s',"input file"],
-   [ 'out=s',"output file"],
-   [ 'n',      "simulate: show output commands but do not run them" ],
-   [ 'm',      "simulate: show output commands omitting file checks" ],
-   [ 'help',   "print usage message and exit" ],
+   [ 'source-dir=s',  	"source directory for video clips" ],
+   [ 'target-dir=s',	"target directory for completed files" ],
+   [ 'profile=s',       'use profile in $HOME/.fftrim, otherwise "default"'],
+   [ 'in=s',			"input file  - single file mode"],
+   [ 'out=s',			"output file - single file mode"],
+   [ 'start=s',			"start time  - single file mode"],
+   [ 'end=s',			"end time    - single file mode"],
+   [ 'n',      			"simulate: show output commands but do not run them" ],
+   [ 'm',      			"simulate: show output commands omitting file checks" ],
+   [ 'help',   			"print usage message and exit" ],
  );
 print($usage->text), exit if $opt->{help} or ! keys %$opt;
 
