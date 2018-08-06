@@ -30,32 +30,32 @@ print($usage->text), exit if $opt->{help} or ! keys %$opt;
 
 my $current_dir = getcwd;
 
-my $contents = 'CONTENTS';
+# support old filename
+my ($control_file) = grep{ -e } map{ join_path($opt->{source_dir},$_) }  qw(CONTROL CONTENTS);
+-e $control_file or die "CONTROL file not found in $opt->{source_dir}";
 
-$contents = join_path($opt->{source_dir}, $contents);
-
-my $encoding_params = join '', <DATA>;
+my $profile = join_path($ENV{HOME}, '.fftrim',  $opt->{profile} // 'default');
+say "profile is $profile";
+my $fh;
+if ( -r $profile){ open $fh, '<', $profile }
+else { $fh = *DATA }
+my $encoding_params = join '', grep {! /^#/} <$fh>;
 $encoding_params =~ s/\n/ /g;
-compress_and_trim_video($opt->{in}, $opt->{out}), exit if $opt->{if} and $opt->{of};
+compress_and_trim_video($opt->{in}, $opt->{out}, $opt->{start} // 0, $opt->{end}), exit if $opt->{in} and $opt->{out};
 
--e $contents or die "$contents: file not found";
 
 my %length;
 my $finaldir = $opt->{target_dir};
 mkdir $finaldir unless -e $finaldir;
 -d $finaldir or die "$finaldir is not a directory!";
 
-# remove column 1 commented lines
-my (@lines) = split "\n", qx( cat $contents);
-@lines = grep{ ! /^#/ and ! /^\s*$/ }  @lines;
+my $control = path($control_file);
+my (@lines) = grep {! /^#/} map{ chomp; $_ } $control->lines;
 my $is_error;
 
-
-#chdir $opt->{source_dir};
 process_lines(); # check for errors;
-say(STDERR "Errors found. Fix CONTENTS files and try again."), exit if $is_error;
-process_lines("really do it!"); # but still may be a test
-#chdir $current_dir;
+say(STDERR "Errors found. Fix $control_file and try again."), exit if $is_error;
+process_lines("really do it! (but still may be a test)");
 
 sub process_lines { 
 	my $do = shift;
