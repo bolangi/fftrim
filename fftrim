@@ -73,8 +73,12 @@ sub process_lines {
 			}
 		}
 		say STDERR qq(no target for source files "$source_files". Using source name.) if not $target;
-		$target //= $source_files[0];
-		$target = mp4_target($target);
+		if ( ! $target ) { 
+			$target = to_mp4($source_files[0]);
+		}
+		else {
+			$target = mp4($target) unless $target =~ /\.[a-zA-Z]{3}$/ 
+		}
 		{
 		no warnings 'uninitialized';
 		say STDERR "source files: @source_files";
@@ -90,7 +94,7 @@ sub process_lines {
 		my $compression_source;
 		if (@source_files > 1)
 		{
-			my $concat_target = mp4_target($source_files[0]);
+			my $concat_target = to_mp4($source_files[0]);
 			say STDERR "concat target: $concat_target";
 			concatenate_video($concat_target, @source_files);
 			$compression_source = $concat_target;
@@ -112,12 +116,10 @@ sub process_lines {
 	}
 }
 
-sub mp4_target { 
-	my $file = shift;
-	$file =~ s/\.(mov|m2v|mts)$//i;
-	$file .= '.mp4' unless $file =~ /\.mp4$/;
-	$file
-}
+sub name_part  { my ($name) = /(.+?)(\.[a-zA-Z]{3})?$/ }
+sub mp4 { $_[0] . '.mp4' }
+sub to_mp4 { mp4(name_part($_[0])) }
+
 sub trim_target { "$finaldir/$_[0]" }
 
 sub concatenate_video {
