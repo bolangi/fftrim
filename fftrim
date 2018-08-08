@@ -19,6 +19,7 @@ my ($opt, $usage) = describe_options(
    [ 'end=s',			"end time    - single file mode"],
    [ 'n',      			"simulate: show output commands but do not run them" ],
    [ 'm',      			"simulate: show output commands omitting file checks" ],
+   [ 'c',      			"conform to source file frame rate" ],
    [ 'help',   			"print usage message and exit" ],
  );
 print($usage->text), exit if $opt->{help} or ! keys %$opt;
@@ -215,6 +216,11 @@ sub video_length {
 	my $result = qx(ffmpeg -i "$videofile" 2>&1 | grep Duration | cut -d ' ' -f 4 | sed s/,//);
 	chomp $result;
 	$result
+}
+sub video_framerate {
+	my $videofile = shift;
+	my $result = qx(ffprobe "$videofile" 2>&1);
+	my ($fps) = $result =~ /(\d+(.\d+)?) fps/;
 }
 
 __DATA__
