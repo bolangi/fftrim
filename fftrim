@@ -19,7 +19,7 @@ my ($opt, $usage) = describe_options(
    [ 'end=s',			"end time    - single file mode"],
    [ 'n',      			"simulate: show output commands but do not run them" ],
    [ 'm',      			"simulate: show output commands omitting file checks" ],
-   [ 'c',      			"conform to source file frame rate" ],
+   [ 'c',      			"make output files conform to source file frame rate" ],
    [ 'help',   			"print usage message and exit" ],
  );
 print($usage->text), exit if $opt->{help} or ! keys %$opt;
