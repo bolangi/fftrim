@@ -75,7 +75,6 @@ sub process_lines {
 		say STDERR qq(no target for source files "$source_files". Using source name.) if not $target;
 		$target //= $source_files[0];
 		$target = mp4_target($target);
-		my $ext = 'mp4';
 		{
 		no warnings 'uninitialized';
 		say STDERR "source files: @source_files";
@@ -112,15 +111,6 @@ sub process_lines {
 			);
 	}
 }
-
-sub media_type {
-	my ($in) = @{+shift};
-	my ($ext) = lc( $in =~ /\.([a-z]{1,3})$/i );
-	return "video" if $ext =~ /mpg|mov|m2v|mts|mp4|dvi/ ;
-	return "audio" if $ext =~ /mp3|ogg|wav/ ;
-}
-sub is_video { media_type eq 'video' }
-sub is_audio { media_type ne 'video' }
 
 sub mp4_target { 
 	my $file = shift;
