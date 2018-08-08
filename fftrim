@@ -67,8 +67,7 @@ sub process_lines {
 		for (@source_files){
 		if ( ! defined $length{$_} )
 			{
-				my $len = qx(video-length "$_");
-				chomp $len;
+				my $len = video_length($_);
 				$length{$_} = seconds($len);
 			}
 		}
@@ -210,6 +209,13 @@ sub join_path { join '/',@_ }
 
 sub simulate { $opt->{n} or $opt->{m} }
 sub file_exists { $opt->{m} ? 0 : -e $_[0] }
+
+sub video_length {
+	my $videofile = shift;
+	my $result = qx(ffmpeg -i "$videofile" 2>&1 | grep Duration | cut -d ' ' -f 4 | sed s/,//);
+	chomp $result;
+	$result
+}
 
 __DATA__
 -c:v libx264
