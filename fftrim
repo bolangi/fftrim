@@ -187,8 +187,15 @@ sub hms {
 }
 sub decode_cutpoint {
 	my ($pos, $sources) = @_;
-	# 1+2+24:15
 	return unless $pos;
+	# 1+2+24:15
+	# 3-24:15 3rd file
+	my ($nth, $time) = $pos =~ /(\d+)-([\d:]+)/;
+	if ($nth){
+
+
+
+	}
 	my (@segments) = $pos =~ /(\d\+)?(\d\+)?(\d\+)?([^+]+)$/;
 	@segments = grep{$_}map{ do { s/\+\s*//g; $_} if $_ } @segments;
 	my $cutpoint = (pop @segments) || 0;
