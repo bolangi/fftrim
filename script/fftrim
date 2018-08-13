@@ -10,13 +10,13 @@ use Getopt::Long::Descriptive;
 
 my ($opt, $usage) = describe_options(
    '%c %o',
-   [ 'source-dir=s',  	"source directory for video clips (batch mode)" ],
-   [ 'target-dir=s',	"destination directory for processed videos (batch mode)" ],
    [ 'in=s',			"input file"],
    [ 'out=s',			"output file"],
    [ 'start=s',			"start time"],
    [ 'end=s',			"end time"],
    [ 'profile=s',       'use named profile under $HOME/.fftrim/, otherwise "default"'],
+   [ 'source-dir=s',  	"source directory (batch mode)" ],
+   [ 'target-dir=s',	"destination directory (batch mode)" ],
    [ 'c',      			"make output files conform to source file frame rate" ],
    [ 'n',      			"simulate: show output commands but do not run them" ],
    [ 'm',      			"simulate: show output commands omitting file checks" ],
