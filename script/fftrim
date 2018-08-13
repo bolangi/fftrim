@@ -11,7 +11,7 @@ use Getopt::Long::Descriptive;
 my ($opt, $usage) = describe_options(
    '%c %o',
    [ 'source-dir=s',  	"source directory for video clips" ],
-   [ 'target-dir=s',	"target directory for completed files" ],
+   [ 'target-dir=s',	"destination directory for processed videos" ],
    [ 'profile=s',       'use profile in $HOME/.fftrim, otherwise "default"'],
    [ 'in=s',			"input file  - single file mode"],
    [ 'out=s',			"output file - single file mode"],
@@ -231,14 +231,11 @@ __DATA__
 -preset:v medium
 -profile:v main
 -tune:v film
-# -r 25 # in future this could come from ffprobe, so we always use the same framerate as source files
 -s:v 640x360
 -c:a aac
 -b:a 80k
 -ac 2
 -ar 24000
-# raise the volume with a limiter to minimize clipping effects
-#-filter_complex aresample=96000,alimiter=level_in=1:level_out=5:limit=0.18:attack=3:release=50:level=disabled,lowpass=f=12000,highpass=f=200
 -level 3
 -strict -2
 -copyts
