@@ -239,6 +239,7 @@ sub video_framerate {
 }
 
 __DATA__
+# change the following ffmpeg arguments to suit
 -c:v libx264
 -preset:v medium
 -profile:v main
@@ -249,5 +250,7 @@ __DATA__
 -ac 2
 -ar 24000
 -level 3
+
+# don't change these arguments
 -strict -2
 -copyts
