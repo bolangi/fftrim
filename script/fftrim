@@ -178,10 +178,11 @@ sub hms {
 	$seconds -= $whole_hours * 3600;
 	my $whole_minutes = int( $seconds / 60 );
 	$seconds -= $whole_minutes * 60;
+	$whole_minutes = "0$whole_minutes" if $whole_minutes < 10;
 	$seconds = "0$seconds" if $seconds < 10;
 	my $output;
 	$output .=  "$whole_hours:" if $whole_hours;
-	$output .=  "$whole_minutes:" if $whole_minutes;
+	$output .=  "$whole_minutes:" if $whole_minutes > 0 or $whole_hours;
 	$output .= $seconds;
 	$output
 }
