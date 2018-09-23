@@ -199,27 +199,19 @@ sub hms {
 	$output
 }
 sub decode_cutpoint {
-	my ($pos, $sources) = @_;
-	return unless $pos;
-	# 1+2+24:15
-	# 3-24:15 3rd file
-	my ($nth, $time) = $pos =~ /(\d+)-([\d:]+)/;
-	my $cutpoint; # this is a position in the final source file
-	my $segments; # this is the count of the preceeding source files included at full length
-	if ($nth){
-		$cutpoint = $time;	
-		$segments = $nth - 1;
-	}
-	else {
-		my (@segments) = $pos =~ /(\d\+)?(\d\+)?(\d\+)?([^+]+)$/;
-		@segments = grep{$_}map{ do { s/\+\s*//g; $_} if $_ } @segments;
-		$cutpoint = (pop @segments) || 0;
-		$segments = scalar @$sources - 1;  
-	}
-	my $total_length = seconds($cutpoint);
-	for (0 .. $segments - 1){ $total_length += $length{$sources->[$_]} }
-	#say "total length: $total_length";
-	hms($total_length)
+    my ($pos, $sources) = @_;
+    # 1+2+24:15
+    return unless $pos;
+    my (@segments) = $pos =~ /(\d\+)?(\d\+)?(\d\+)?([^+]+)$/;
+    @segments = grep{$_}map{ do { s/\+\s*//g; $_} if $_ } @segments;
+    my $cutpoint = (pop @segments) || 0;
+    my $total_length = 0;
+    $total_length += seconds($cutpoint);
+    for (0 .. scalar @$sources-1){
+        $total_length += $length{$sources->[$_]} if $_ < @segments;
+    }
+    #say "total length: $total_length";
+    hms($total_length)
 }
 sub join_path { join '/',@_ }
 
