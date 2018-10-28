@@ -245,4 +245,4 @@ __DATA__
 
 # don't change these arguments
 -strict -2
--copyts
+# -copyts # causes problem rendering 20180923-2
