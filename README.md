@@ -22,6 +22,9 @@ file that includes the full length of the first clip and
 1:12 minutes of the second clip. Similarly, 1+2+65 and
 1+2+1:05 mean a position of 1:05 into the third clip.
 
+The source files are concatenated into an intermediate file 
+using the basename of the first source file appended with .mp4.
+
 ### Batch mode
 
     fftrim --source-dir raw --target-dir final
