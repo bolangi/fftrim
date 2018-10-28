@@ -14,7 +14,8 @@ my ($opt, $usage) = describe_options(
    [ 'out=s',			"output file"],
    [ 'start=s',			"start time"],
    [ 'end=s',			"end time"],
-   [ 'profile=s',       'use named profile under $HOME/.fftrim/, otherwise "default"'],
+            --profile STR      
+   [ 'profile=s',       'merge ffmpeg options from named file in $HOME/.fftrim'],
    [ 'source-dir=s',  	"source directory (batch mode)" ],
    [ 'target-dir=s',	"destination directory (batch mode)" ],
    [ 'c',      			"make output files conform to source file frame rate" ],

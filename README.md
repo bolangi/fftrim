@@ -21,7 +21,6 @@ The expression 1+1:12 means a position in the concatenated
 file that includes the full length of the first clip and
 1:12 minutes of the second clip. Similarly, 1+2+65 and
 1+2+1:05 mean a position of 1:05 into the third clip.
-Patches accepted for better syntax.
 
 ### Batch mode
 
@@ -55,7 +54,7 @@ and ends at 24:55 into the second file.
     fftrim [-cmn] [long options...]
             --source-dir STR  source directory for video clips
             --target-dir STR  target directory for completed files
-            --profile STR     use profile in $HOME/.fftrim, otherwise "default"
+            --profile STR     merge ffmpeg options from named file in $HOME/.fftrim 
             --in STR          input file  - single file mode
             --out STR         output file - single file mode
             --start STR       start time  - single file mode
@@ -64,4 +63,8 @@ and ends at 24:55 into the second file.
             -m                simulate: show output commands omitting file checks
             -c                conform to source file frame rate
             --help            print usage message and exit
+
+### Bugs
+
+Please report any bugs you encounter.
 
