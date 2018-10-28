@@ -25,11 +25,6 @@ our ($opt, $usage) = describe_options(
  );
 print($usage->text), exit if $opt->{help} or ! keys %$opt;
 
-# 00000.MTS 00001.MTS 00002.MTS : 20170815-1 : 0:15 : # 1+2+11:41
-# three .MTS files are to be concatentated into
-# intermediate file 00000.mp4, then trimmed and 
-# compressed into ../final/20170815-1.mp4
-
 our $current_dir = getcwd;
 
 # support old filename
