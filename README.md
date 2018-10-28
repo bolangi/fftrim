@@ -2,37 +2,59 @@
 
 ## Description
 
-fftrim processes raw videos (as from a camcorder) by
-concatenating, trimming and compressing them. 
+fftrim processes raw videos from a camcorder by
+concatenating, trimming and compressing them
+according to arguments you supply on the 
+command line, or in a CONTROL file. 
 
 ## Synopsis
   
-### Single file mode
+### Processing a single file
 
     fftrim --in 000001.MTS --out output.mp4 --start 15.5 --end 44:13
 
+### Handling concatenated sources
+
+    fftrim --in "000001.MTS 00002.MTS" --out output.mp4 --start 45:13 -- 1+1:12
+
+The expression 1+1:12 means a position in the concatenated
+file that includes the full length of the first clip and
+1:12 minutes of the second clip. Similarly, 1+2+65 and
+1+2+1:05 mean a position of 1:05 into the third clip.
+
 ### Batch mode
 
-    fftrim --source-dir raw --target-dir done
+    fftrim --source-dir raw --target-dir final
 
-CONTROL file in raw/
+### CONTROL file format
 
-    000001.MTS 000002.MTS : middle.mp4 : 15.5 : 44:13 
+The CONTROL file is used for batch processing
+and appears in the same directory as the source
+video files. It contains multiple lines
+of the following format:
 
-This line creates middle.mp4 in the target directory
-from source files 000001.MTS and 000002.MTS.
 
-    000001.MTS 000002.MTS : end.mp4 :  1+10:13 
+    # source file(s)    output file   start  end
+    # ---------------   -----------   -----  ----
+    000001.MTS        : part1.mp4   : 15.5 : 44:13 
 
-Output file end.mp4 is created starting at a position 10:13
-into the second sourcefile.
+Arguments are separated by a colon character
+flanked by whitespace. Commented lines are ignored.
+
+The following line creates part2.mp4 from source files
+000001.MTS and 000002.MTS:
+
+    000001.MTS 000002.MTS : part2.mp4 :  44:13 : 1+24:55 
+
+The extracted video starts 44:13 into the first source file.
+and ends at 24:55 into the second file.
 
 ### Help 
 
     fftrim [-cmn] [long options...]
             --source-dir STR  source directory for video clips
             --target-dir STR  target directory for completed files
-            --profile STR     use profile in $HOME/.fftrim, otherwise "default"
+            --profile STR     merge ffmpeg options from named file in $HOME/.fftrim 
             --in STR          input file  - single file mode
             --out STR         output file - single file mode
             --start STR       start time  - single file mode
@@ -41,4 +63,8 @@ into the second sourcefile.
             -m                simulate: show output commands omitting file checks
             -c                conform to source file frame rate
             --help            print usage message and exit
+
+### Bugs
+
+Please report any bugs you encounter.
 
