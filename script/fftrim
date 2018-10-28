@@ -11,7 +11,7 @@ use Cwd;
 use Getopt::Long::Descriptive;
 our ($opt, $usage) = describe_options(
    '%c %o',
-   [ 'in=s',			"input file"],
+   [ 'in=s',			"input file(s)"],
    [ 'out=s',			"output file"],
    [ 'start=s',			"start time"],
    [ 'end=s',			"end time"],
@@ -50,7 +50,12 @@ if ( -r $profile){ open $fh, '<', $profile }
 else { $fh = *DATA }
 our $encoding_params = join '', grep {! /^#/} <$fh>;
 $encoding_params =~ s/\n/ /g;
-compress_and_trim_video($opt->{in}, $opt->{out}, $opt->{start} // 0, $opt->{end}), exit if $opt->{in} and $opt->{out};
+
+# handle command line mode 
+if ($opt->{in} and $opt->{out} ){
+	compress_and_trim_video($opt->{in}, $opt->{out}, $opt->{start} // 0, $opt->{end});
+	exit
+}
 
 
 our %length;
