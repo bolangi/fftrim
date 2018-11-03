@@ -3,30 +3,13 @@ package fftrim;
 use 5.006;
 use strict;
 use warnings;
+use App::fftrim;
 use Path::Tiny;
 use autodie ':all';
 use feature 'say';
 use Cwd;
-use App::fftrim;
 use Getopt::Long::Descriptive;
-
-our ($opt, $usage,
-	$current_dir,
-	$control,
-	$control_file,
-	$dotdir ,
-	$profile,
-	$fh,
-	$encoding_params,
-	%length,
-	$framerate,
-	$finaldir,
-	@lines,
-	$is_error,
-);
-
-use Getopt::Long::Descriptive;
-($opt, $usage) = describe_options(
+our ($opt, $usage) = describe_options(
    '%c %o',
    [ 'in=s',			"input file(s)"],
    [ 'out=s',			"output file"],
@@ -41,7 +24,7 @@ use Getopt::Long::Descriptive;
    [ 'help',   			"print usage message and exit" ],
  );
 print($usage->text, 
-	"\nNote that options --in, --out, --start --end are not compatible with batch mode\n"),
+	"\nNote that --in, --out, --start and --end options are not available with batch mode\n"),
 	exit if $opt->{help} or ! keys %$opt;
 
 process_args();
