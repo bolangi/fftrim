@@ -39,7 +39,10 @@ use Getopt::Long::Descriptive;
    [ 'm',      			"simulate: show output commands omitting file checks" ],
    [ 'help',   			"print usage message and exit" ],
  );
-print($usage->text), exit if $opt->{help} or ! keys %$opt;
+print($usage->text, 
+	"\nNote that options --in, --out, --start --end are not compatible with batch mode\n"),
+	exit if $opt->{help} or ! keys %$opt;
+
 
 $current_dir = getcwd;
 
