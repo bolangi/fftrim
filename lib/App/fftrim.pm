@@ -1,4 +1,83 @@
+package fftrim;
+use 5.006;
+use strict;
+use warnings;
+use Path::Tiny;
+use autodie ':all';
+use feature 'say';
+use Cwd;
+our ($opt, $usage,
+	$current_dir,
+	$control,
+	$control_file,
+	$dotdir ,
+	$profile,
+	$fh,
+	$encoding_params,
+	%length,
+	$framerate,
+	$finaldir,
+	@lines,
+	$is_error,
+);
+sub process_lines { 
+	my $do = shift;
+	foreach my $line (@lines){
+		$line =~ s/\s+$//;
+		say STDERR "line: $line";
+		my ($source_files, $target, $start, $end) = split /\s+[:|]\s+/, $line;
+		my @source_files = map{ join_path($opt->{source_dir}, $_)} split " ", $source_files;
+		$framerate = video_framerate($source_files[0]);
+		for (@source_files){
+		if ( ! defined $length{$_} )
+			{
+				my $len = video_length($_);
+				$length{$_} = seconds($len);
+			}
+		}
+		say STDERR qq(no target for source files "$source_files". Using source name.) if not $target;
+		if ( ! $target ) { 
+			$target = to_mp4($source_files[0]);
+		}
+		else {
+			$target = mp4($target) unless $target =~ /\.[a-zA-Z]{3}$/ 
+		}
+		{
+		no warnings 'uninitialized';
+		say STDERR "source files: @source_files";
+		say STDERR "target: $target";
+		say STDERR "start time: $start";
+		say STDERR "end time: $end";
+		say(STDERR qq(no source files in line!! $line)), $is_error++, if not @source_files;
+		my @missing = grep { ! -r } @source_files;
+		say(STDERR qq(missing source files: @missing)), $is_error++, if @missing;
+		}
 
+		next unless $do;
+		my $compression_source;
+		if (@source_files > 1)
+		{
+			my $concat_target = to_mp4($source_files[0]);
+			say STDERR "concat target: $concat_target";
+			concatenate_video($concat_target, @source_files);
+			$compression_source = $concat_target;
+		} 
+		else 
+		{ 
+			$compression_source = $source_files[0];
+		}
+			my $final = trim_target($target); 
+			$start = decode_cutpoint($start, \@source_files);
+			$end = decode_cutpoint($end, \@source_files);
+			say STDERR "decoded start: $start, decoded end: $end";
+			compress_and_trim_video(
+				$compression_source,
+				$final, 
+				$start,
+				$end
+			);
+	}
+}
 =head1 NAME
 
 App::fftrim - The great new App::fftrim!
