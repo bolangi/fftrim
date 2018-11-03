@@ -19,6 +19,8 @@ our ($opt, $usage,
 	$finaldir,
 	@lines,
 	$is_error,
+	@source_files,
+	$concat_target,
 );
 sub process_args {
 
@@ -50,7 +52,13 @@ $encoding_params =~ s/\n/ /g;
 
 # handle command line mode 
 if ($opt->{in} and $opt->{out} ){
-	compress_and_trim_video($opt->{in}, $opt->{out}, $opt->{start} // 0, $opt->{end});
+	if ($opt->{in} =~ /\s/)
+	{
+		@source_files = split ' ', $opt->{in};
+		$concat_target = to_mp4($source_files[0]);
+		concatenate_video($concat_target, @source_files);
+	}
+	compress_and_trim_video($concat_target//$opt->{in}, $opt->{out}, $opt->{start} // 0, $opt->{end});
 	exit
 }
 
