@@ -160,6 +160,7 @@ sub concatenate_video {
 }
 sub compress_and_trim_video {
 	my ($input, $output, $start, $end) = @_;
+	say "compress and trim args: ",join " | ",$input, $output, $start, $end;
 	say(STDERR "$output: file exists, skipping"), return if file_exists( $output );
 	$start //= 0;
 	my @args = "ffmpeg";
