@@ -27,9 +27,6 @@ sub process_args {
 
 $current_dir = getcwd;
 
-# support old filename
-($control_file) = grep{ -e } map{ join_path($opt->{source_dir},$_) }  qw(CONTROL CONTENTS);
--e $control_file or die "CONTROL file not found in $opt->{source_dir}";
 $dotdir = join_path($ENV{HOME}, '.fftrim');
 if ( ! -d $dotdir)
 {	say qq(Directory "$dotdir" not found. Create it? y/n [Y]);
@@ -55,13 +52,20 @@ if ($opt->{in} and $opt->{out} ){
 	if ($opt->{in} =~ /\s/)
 	{
 		@source_files = split ' ', $opt->{in};
+		say "source files: ", join '|', @source_files;
 		$concat_target = to_mp4($source_files[0]);
+		say "concat target: $concat_target";
 		concatenate_video($concat_target, @source_files);
 	}
 	compress_and_trim_video($concat_target//$opt->{in}, $opt->{out}, $opt->{start} // 0, $opt->{end});
 	exit
 }
 
+# batch mode
+
+# support old filename
+($control_file) = grep{ -e } map{ join_path($opt->{source_dir},$_) }  qw(CONTROL CONTENTS);
+-e $control_file or die "CONTROL file not found in $opt->{source_dir}";
 
 $finaldir = $opt->{target_dir};
 mkdir $finaldir unless -e $finaldir;
