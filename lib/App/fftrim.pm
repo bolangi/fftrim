@@ -77,7 +77,19 @@ $control = path($control_file);
 process_lines(); # check for errors;
 say(STDERR "Errors found. Fix $control_file and try again."), exit if $is_error;
 process_lines("really do it! (but still may be a test)");
+
 }
+sub get_lengths {
+	my @source_files = @_;
+		for (@source_files)
+		{
+			next if defined $length{$_};
+			my $len = video_length($_);
+			$length{$_} = seconds($len);
+		}
+
+}
+
 sub process_lines { 
 	my $do = shift;
 	foreach my $line (@lines){
@@ -86,13 +98,7 @@ sub process_lines {
 		my ($source_files, $target, $start, $end) = split /\s+[:|]\s+/, $line;
 		my @source_files = map{ join_path($opt->{source_dir}, $_)} split " ", $source_files;
 		$framerate = video_framerate($source_files[0]);
-		for (@source_files){
-		if ( ! defined $length{$_} )
-			{
-				my $len = video_length($_);
-				$length{$_} = seconds($len);
-			}
-		}
+		get_lengths(@source_files);
 		say STDERR qq(no target for source files "$source_files". Using source name.) if not $target;
 		if ( ! $target ) { 
 			$target = to_mp4($source_files[0]);
