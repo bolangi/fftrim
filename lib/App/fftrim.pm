@@ -52,6 +52,7 @@ sub process_args {
 		if ($opt->{in} =~ /\s/)
 		{
 			@source_files = split ' ', $opt->{in};
+			$framerate = video_framerate($source_files[0]);
 			say "source files: ", join '|', @source_files;
 			$concat_target = to_mp4($source_files[0]);
 			say "concat target: $concat_target";
