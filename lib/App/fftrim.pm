@@ -25,58 +25,58 @@ our ($opt, $usage,
 sub process_args {
 
 
-$current_dir = getcwd;
+	$current_dir = getcwd;
 
-$dotdir = join_path($ENV{HOME}, '.fftrim');
-if ( ! -d $dotdir)
-{	say qq(Directory "$dotdir" not found. Create it? y/n [Y]);
-	my $answer = <STDIN>;
-	mkdir $dotdir if $answer =~ /[yYjJ]/;
-}
-$profile = join_path($dotdir,  $opt->{profile} // 'default');
-if ($profile =~ /\bdefault$/ and ! -e $profile )
-{
-	my $defaultfile = path($profile);
-	say STDERR "creating default profile in $profile";
-	$defaultfile->spew(<DATA>);
-	say STDERR "edit the settings to suit your output targets or create additional profiles";
-}
-say STDERR "profile is $profile";
-if ( -r $profile){ open $fh, '<', $profile }
-else { $fh = *DATA }
-$encoding_params = join '', grep {! /^#/} <$fh>;
-$encoding_params =~ s/\n/ /g;
-
-# handle command line mode 
-if ($opt->{in} and $opt->{out} ){
-	if ($opt->{in} =~ /\s/)
-	{
-		@source_files = split ' ', $opt->{in};
-		say "source files: ", join '|', @source_files;
-		$concat_target = to_mp4($source_files[0]);
-		say "concat target: $concat_target";
-		concatenate_video($concat_target, @source_files);
+	$dotdir = join_path($ENV{HOME}, '.fftrim');
+	if ( ! -d $dotdir)
+	{	say qq(Directory "$dotdir" not found. Create it? y/n [Y]);
+		my $answer = <STDIN>;
+		mkdir $dotdir if $answer =~ /[yYjJ]/;
 	}
-	compress_and_trim_video($concat_target//$opt->{in}, $opt->{out}, $opt->{start} // 0, $opt->{end});
-	exit
-}
+	$profile = join_path($dotdir,  $opt->{profile} // 'default');
+	if ($profile =~ /\bdefault$/ and ! -e $profile )
+	{
+		my $defaultfile = path($profile);
+		say STDERR "creating default profile in $profile";
+		$defaultfile->spew(<DATA>);
+		say STDERR "edit the settings to suit your output targets or create additional profiles";
+	}
+	say STDERR "profile is $profile";
+	if ( -r $profile){ open $fh, '<', $profile }
+	else { $fh = *DATA }
+	$encoding_params = join '', grep {! /^#/} <$fh>;
+	$encoding_params =~ s/\n/ /g;
 
-# batch mode
+	# handle command line mode 
+	if ($opt->{in} and $opt->{out} ){
+		if ($opt->{in} =~ /\s/)
+		{
+			@source_files = split ' ', $opt->{in};
+			say "source files: ", join '|', @source_files;
+			$concat_target = to_mp4($source_files[0]);
+			say "concat target: $concat_target";
+			concatenate_video($concat_target, @source_files);
+		}
+		compress_and_trim_video($concat_target//$opt->{in}, $opt->{out}, $opt->{start} // 0, $opt->{end});
+		exit
+	}
 
-# support old filename
-($control_file) = grep{ -e } map{ join_path($opt->{source_dir},$_) }  qw(CONTROL CONTENTS);
--e $control_file or die "CONTROL file not found in $opt->{source_dir}";
+	# batch mode
 
-$finaldir = $opt->{target_dir};
-mkdir $finaldir unless -e $finaldir;
--d $finaldir or die "$finaldir is not a directory!";
+	# support old filename
+	($control_file) = grep{ -e } map{ join_path($opt->{source_dir},$_) }  qw(CONTROL CONTENTS);
+	-e $control_file or die "CONTROL file not found in $opt->{source_dir}";
 
-$control = path($control_file);
-(@lines) = grep {! /^#/} map{ chomp; $_ } $control->lines;
+	$finaldir = $opt->{target_dir};
+	mkdir $finaldir unless -e $finaldir;
+	-d $finaldir or die "$finaldir is not a directory!";
 
-process_lines(); # check for errors;
-say(STDERR "Errors found. Fix $control_file and try again."), exit if $is_error;
-process_lines("really do it! (but still may be a test)");
+	$control = path($control_file);
+	(@lines) = grep {! /^#/} map{ chomp; $_ } $control->lines;
+
+	process_lines(); # check for errors;
+	say(STDERR "Errors found. Fix $control_file and try again."), exit if $is_error;
+	process_lines("really do it! (but still may be a test)");
 
 }
 sub get_lengths {
