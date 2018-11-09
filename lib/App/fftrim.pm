@@ -168,7 +168,7 @@ sub compress_and_trim_video {
 	push @args, "-to $end" if $end;
 	push @args, $encoding_params;
 	push @args, "-ss $start" if $start;
-	push @args, "-r $framerate" if $opt->{c};
+	push @args, "-r $framerate" if $opt->{r};
 	push @args, $output;
 	my $cmd = join " ",@args;
 	say $cmd;

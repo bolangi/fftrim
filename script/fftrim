@@ -18,7 +18,7 @@ our ($opt, $usage) = describe_options(
    [ 'profile=s',       'merge ffmpeg options from named file in $HOME/.fftrim'],
    [ 'source-dir=s',  	"batch mode, source directory" ],
    [ 'target-dir=s',	"batch mode, destination directory" ],
-   [ 'c',      			"make output files conform to source file frame rate" ],
+   [ 'r',      			"make output files conform to source file frame rate" ],
    [ 'n',      			"simulate: show output commands but do not run them" ],
    [ 'm',      			"simulate: show output commands omitting file checks" ],
    [ 'old-concat',		"use old, broken naming style for concat target" ],
