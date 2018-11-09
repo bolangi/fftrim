@@ -8,6 +8,7 @@ my $builder = Module::Build->new(
     license             => 'artistic_2',
     dist_author         => q{Joel Roth <joelz@pobox.com >},
     dist_version_from   => 'lib/App/fftrim.pm',
+	script_files		=> ['script/fftrim'],
     release_status      => 'stable',
     configure_requires => {
         'Module::Build' => '0',
