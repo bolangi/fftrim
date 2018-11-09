@@ -54,22 +54,23 @@ and ends at 24:55 into the second file.
 
 ### Help 
 
-	fftrim [-cmn] [long options...]
-		--in STR          input file(s)
-		--out STR         output file
-		--start STR       start time
-		--end STR         end time
-		--profile STR     merge ffmpeg options from named file in
-						  $HOME/.fftrim
-		--source-dir STR  batch mode, source directory
-		--target-dir STR  batch mode, destination directory
-		-r                make output files conform to source file frame rate
-		-n                simulate: show output commands but do not run them
-		-m                simulate: show output commands omitting file checks
-		--old-concat      use old, broken naming style for concat target
-		--help            print usage message and exit
+fftrim [-mnr] [long options...]
+	--in STR          input file(s)
+	--out STR         output file
+	--start STR       start time
+	--end STR         end time
+	--profile STR     merge ffmpeg options from named file in
+	                  $HOME/.fftrim
+	--source-dir STR  batch mode, source directory
+	--target-dir STR  batch mode, destination directory
+	-r --frame-rate   specify framerate (with no arg: fallback to source
+	                  file frame rate)
+	-n                simulate: print commands but do not run them
+	-m                simulate: print commands omitting file checks
+	--old-concat      use old, broken naming style for concat target
+	--help            print usage message and exit
 
-	Note that --in, --out, --start and --end options are not available with batch mode
+Note that --in, --out, --start and --end options are not available with batch mode
 
 ### Bugs
 
