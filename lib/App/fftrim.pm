@@ -144,7 +144,7 @@ sub process_lines {
 }
 sub name_part  { my ($name) = /(.+?)(\.[a-zA-Z]{3})?$/ }
 sub mp4 { $_[0] . '.mp4' }
-sub to_mp4 { mp4(name_part($_[0])) }
+sub to_mp4 { mp4( $opt->{old_concat} ? name_part($_[0]): $_[0]) }
 
 sub trim_target { "$finaldir/$_[0]" }
 
