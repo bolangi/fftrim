@@ -1,4 +1,4 @@
-package fftrim;
+package App::fftrim;
 use 5.006;
 use strict;
 use warnings;
@@ -219,19 +219,21 @@ sub decode_cutpoint {
 	my ($nth, $time) = $pos =~ /(\d+)-([\d:]+)/;
 	my $cutpoint; # this is a position in the final source file
 	my $segments; # this is the count of the preceeding source files included at full length
-	if ($nth){
-		$cutpoint = $time;	
-		$segments = $nth - 1;
-	}
+ 	if ($nth){
+ 		$cutpoint = $time;	
+ 		$segments = $nth - 1;
+ 	}
 	else {
 		my (@segments) = $pos =~ /(\d\+)?(\d\+)?(\d\+)?([^+]+)$/;
-		@segments = grep{$_}map{ do { s/\+\s*//g; $_} if $_ } @segments;
-		$cutpoint = (pop @segments) || 0;
-		$segments = scalar @$sources - 1;  
+		$cutpoint = (pop @segments) // 0;
+		$segments = 0;
+		if (@segments){
+			@segments = map{ s/\+\s*//g; $_ } grep{$_} @segments;
+			$segments =  scalar @segments;
+		}
 	}
 	my $total_length = seconds($cutpoint);
-	for (0 .. $segments - 1){ $total_length += $length{$sources->[$_]} }
-	#say "total length: $total_length";
+	$total_length += $length{$sources->[$_]} for 0 .. $segments - 1;
 	hms($total_length)
 }
 sub join_path { join '/',@_ }
