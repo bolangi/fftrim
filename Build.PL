@@ -7,7 +7,7 @@ my $builder = Module::Build->new(
     module_name         => 'App::fftrim',
     license             => 'artistic_2',
     dist_author         => q{Joel Roth <joelz@pobox.com >},
-    dist_version_from   => 'lib/App/fftrim.pm',
+    dist_version_from   => 'script/fftrim',
 	script_files		=> ['script/fftrim'],
     release_status      => 'stable',
     configure_requires => {
@@ -17,8 +17,7 @@ my $builder = Module::Build->new(
         'Test::More' => '0',
     },
     requires => {
-        #'ABC'              => '1.6',
-        #'Foo::Bar::Module' => '5.0401',
+        'Path::Tiny'              => '0',
     },
     add_to_cleanup     => [ 'App-fftrim-*' ],
 );
