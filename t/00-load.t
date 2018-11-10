@@ -10,4 +10,4 @@ BEGIN {
     use_ok( 'App::fftrim' ) || print "Bail out!\n";
 }
 
-diag( "Testing App::fftrim $App::fftrim::VERSION, Perl $], $^X" );
+diag( "Testing App::fftrim v$App::fftrim::VERSION, Perl $], $^X" );

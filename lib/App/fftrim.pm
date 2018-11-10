@@ -2,6 +2,7 @@ package App::fftrim;
 use 5.006;
 use strict;
 use warnings;
+no warnings 'once';
 use Path::Tiny;
 use autodie ':all';
 use feature 'say';
@@ -280,6 +281,14 @@ sub video_framerate {
 =head1 NAME
 
 B<fftrim> - concatenate, trim and compress video files
+
+=head1 VERSION
+
+Version 0.01
+
+=cut
+
+our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
