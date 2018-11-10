@@ -1,5 +1,17 @@
 #!/usr/bin/env perl
+#
+=head1 NAME
+
+B<fftrim> - concatenate, trim and compress video files
+
+=head1 VERSION
+
+Version 0.01
+
+=cut
+
 package App::fftrim;
+our $VERSION = '0.01';
 use 5.006;
 use strict;
 use warnings;
@@ -52,17 +64,13 @@ __DATA__
 # don't change these arguments
 -strict -2
 
-=head1 NAME
-
-B<fftrim> - concatenate, trim and compress video files
-
-=head1 Synopsis
+=head1 SYNOPSIS
 
 C<fftrim --in 00001.MTS --out clip1.mp4 --start 15.5 --end 44:13>
 
 C<fftrim --in "00001.MTS 00002.MTS" --out clip2.mp4 --start 44:13 --end 2-24:55>
 
-=head1 Description
+=head1 DESCRIPTION
 
 B<fftrim> processes raw videos from a camcorder by
 concatenating, trimming and compressing them according to
@@ -172,9 +180,9 @@ L<https://metacpan.org/release/App-fftrim>
 
 =back
 
-
 =head1 ACKNOWLEDGEMENTS
 
+Thanks to ffmpeg developers and the community.
 
 =head1 LICENSE AND COPYRIGHT
 

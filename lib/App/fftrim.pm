@@ -279,19 +279,11 @@ sub video_framerate {
 }
 =head1 NAME
 
-App::fftrim - The great new App::fftrim!
-
-=head1 VERSION
-
-Version 0.01
-
-=cut
-
-our $VERSION = '0.01';
-
+B<fftrim> - concatenate, trim and compress video files
 
 =head1 SYNOPSIS
 
 see 'man fftrim' or 'perldoc fftrim'.
 
+=cut
 1; # End of App::fftrim
