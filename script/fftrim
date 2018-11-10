@@ -21,9 +21,10 @@ our ($opt, $usage) = describe_options(
    [ 'frame-rate|r',    "specify framerate (with no arg: fallback to source file frame rate)" ],
    [ 'n',      			"simulate: print commands but do not run them" ],
    [ 'm',      			"simulate: print commands omitting file checks" ],
-   [ 'old-concat',		"use old, broken naming style for concat target" ],
+   [ 'old-concat',		"old naming for intermediate file" ],
    [ 'help',   			"print usage message and exit" ],
  );
+initial_setup() and exit;
 print($usage->text, 
 	"\nNote that --in, --out, --start and --end options are not available with batch mode\n"),
 	exit if $opt->{help} or ! keys %$opt;
@@ -32,7 +33,8 @@ process_args();
 
 
 __DATA__
-# change the following ffmpeg arguments to suit
+# change the following ffmpeg arguments to suit your purposes
+
 -c:v libx264
 -preset:v medium
 -profile:v main
@@ -46,4 +48,3 @@ __DATA__
 
 # don't change these arguments
 -strict -2
-# -copyts # causes problem rendering 20180923-2
