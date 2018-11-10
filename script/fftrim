@@ -16,7 +16,7 @@ our ($opt, $usage) = describe_options(
    [ 'start=s',			"start time"],
    [ 'end=s',			"end time"],
    [ 'concat-only|c',	"concatenate only" ],
-   [ 'profile=s',       'merge ffmpeg options from named file in $HOME/.fftrim'],
+   [ 'profile|p=s',       'merge ffmpeg options from named file in $HOME/.fftrim'],
    [ 'source-dir=s',  	"batch mode, source directory" ],
    [ 'target-dir=s',	"batch mode, destination directory" ],
    [ 'frame-rate|r=s',  "specify frame rate" ],
@@ -59,7 +59,7 @@ B<fftrim> - concatenate, trim and compress video files
 
 C<fftrim --in 00001.MTS --out clip1.mp4 --start 15.5 --end 44:13>
 
-C<fftrim --in "00001.MTS 00002.MTS" --out clip2.mp4 --start 44:13 --end 2-1:12>
+C<fftrim --in "00001.MTS 00002.MTS" --out clip2.mp4 --start 44:13 --end 2-24:55>
 
 =head2 Description
 
@@ -68,19 +68,19 @@ concatenating, trimming and compressing them
 according to arguments you supply on the 
 command line, or in a F<CONTROL> file.
 
-=head3 Processing a single file
+=head3 Trimming a single file
 
 C<fftrim --in 00001.MTS --out clip1.mp4 --start 15.5 --end 44:13>
 
-=head3 Handling concatenated sources
+=head3 Concatenating multiple source files
 
-C<fftrim --in "00001.MTS 00002.MTS 00003.MTS" --out clip2.mp4 --start 44:13 --end 2-1:12>
+C<fftrim --in "00001.MTS 00002.MTS 00003.MTS" --out clip2.mp4 --start 44:13 --end 2-24:55>
 
-C<fftrim --in "00001.MTS 00002.MTS 00003.MTS" --out clip2.mp4 --start 2-1:12 --end 3-1:05>
+C<fftrim --in "00001.MTS 00002.MTS 00003.MTS" --out clip3.mp4 --start 2-24:55 --end 3-1:05>
 
-The expression C<2-1:12> means a position in the concatenated
+The expression C<2-24:55> means a position in the concatenated
 file that includes the full length of the first clip and
-1:12 minutes of the second clip. Similarly, C<3-65> or
+24:55 of the second clip. Similarly, C<3-65> or
 C<3-1:05> would mean a position of 1:05 into the third clip.
 
 The source files are concatenated into an intermediate file
@@ -90,10 +90,17 @@ using the name of the first source file appended with .mp4.
 
 C<fftrim --source-dir raw --target-dir final>
 
+It's probably better to try with the -n or -m flag first.
+
+C<fftrim -n --source-dir raw --target-dir final>
+
+There is also some simple error checking, and fftrim
+will abort if errors are found in the CONTROL file.
+
 =head3 CONTROL file format
 
-The CONTROL file is used for batch processing
-and appears in the same directory as the source
+The CONTROL file used for batch processing
+appears in the same directory as the source
 video files. It contains multiple lines
 of the following format:
 
@@ -101,16 +108,14 @@ of the following format:
     # ---------------   -----------   -----  ----
       00001.MTS       : part1.mp4   : 15.5 : 44:13 
 
-Arguments are separated by a colon character
-flanked by whitespace. Commented lines are ignored.
+Arguments are separated by a colon character flanked by
+whitespace. You may also use a comma, semicolon, pipe can also be used as separators.
+Commented lines are ignored.
 
 The following line creates F<part2.mp4> from source files
 F<00001.MTS> and F<00002.MTS>:
 
     00001.MTS 00002.MTS : part2.mp4 :  44:13 : 2-24:55 
-
-The extracted video starts 44:13 into the first source file.
-and ends 24:55 from the start of the second file.
 
 =head3 Profiles
 
