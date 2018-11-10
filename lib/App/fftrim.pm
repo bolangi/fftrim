@@ -175,11 +175,10 @@ sub compress_and_trim_video {
 	my ($input, $output, $start, $end) = @_;
 	say "compress and trim args: ",join " | ",$input, $output, $start, $end;
 	say(STDERR "$output: file exists, skipping"), return if file_exists( $output );
-   	my $target_framerate = $opt->{frame_rate} > 1 
-											? $opt->{frame_rate} 
-											: $opt->{frame_rate} == 1 
-													? $framerate
-													: undef;
+   	my $target_framerate;
+   	$target_framerate = $opt->{auto_frame_rate}
+							? $framerate
+							: $opt->{frame_rate};
 	$start //= 0;
 	my @args = "ffmpeg";
 	push @args, "-i $input";
