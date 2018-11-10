@@ -31,14 +31,14 @@ sub initial_setup {
 		$did_something++;
 		my $default = join_path($dotdir, 'default');
 		say STDERR qq(\n$default contains ffmpeg options to merge by default.);
-		print STDERR qq(\nShall I populate this file with some basic settings ? [y/n] );
+		print STDERR qq(\nShall I populate this file with sample compression settings ? [y/n] );
 		my $answer = <STDIN>;
 		open my $fh, '>', $default;
 		if ($answer =~ /YyJj/)
 		{
 			my @lines = <DATA>;
 			print $fh @lines;	
-			say STDERR "Edit this file to suit your needs or create additional profiles";
+			say STDERR "Done! Edit this file to suit your needs or create additional profiles";
 		}
 		else {print $fh "\n"}
 	}
