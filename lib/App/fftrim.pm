@@ -118,6 +118,7 @@ sub process_lines {
 			$target = to_mp4($source_files[0]);
 		}
 		else {
+			# pass filenames with extension, otherwise append .mp4
 			$target = mp4($target) unless $target =~ /\.[a-zA-Z]{3}$/ 
 		}
 		{
