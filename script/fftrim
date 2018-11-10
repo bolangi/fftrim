@@ -15,7 +15,7 @@ our ($opt, $usage) = describe_options(
    [ 'out=s',			"output file"],
    [ 'start=s',			"start time"],
    [ 'end=s',			"end time"],
-   [ 'concat-only|c',	"concatenate files only" ],
+   [ 'concat-only|c',	"concatenate only" ],
    [ 'profile=s',       'merge ffmpeg options from named file in $HOME/.fftrim'],
    [ 'source-dir=s',  	"batch mode, source directory" ],
    [ 'target-dir=s',	"batch mode, destination directory" ],
