@@ -28,7 +28,8 @@ our ($opt, $usage) = describe_options(
  );
 initial_setup() and exit;
 print($usage->text, 
-	"\nNote that --in, --out, --start and --end options are not available in batch mode\n"),
+	"\nSingle-file options --in, --out, --start and --end cannot
+be mixed with batch mode options --source-dir and --target-dir.\n\n"),
 	exit if $opt->{help} or ! keys %$opt;
 
 process_args();
