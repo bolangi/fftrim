@@ -27,11 +27,11 @@ sub initial_setup {
 	$dotdir = join_path($ENV{HOME}, '.fftrim');
 	my $did_something;
 	if ( ! -d $dotdir)
-	{	print STDERR qq(Directory "$dotdir" not found. Create it? y/n );
+	{	print STDERR qq(Directory "$dotdir" not found. Create it? [y/n] );
 		my $answer = <STDIN>;
 		mkdir($dotdir), $did_something++ if $answer =~ /[yYjJ]/;
 		my $default = join_path($dotdir, 'default');
-		print STDERR qq(Populate $default with ffmpeg options? y/n );
+		print STDERR qq(Populate $default with ffmpeg options? [y/n] );
 		open my $fh, '>', $default;
 		$answer = <STDIN>;
 		if ($answer =~ /[yYjJ]/)
