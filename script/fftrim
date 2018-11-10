@@ -33,7 +33,7 @@ process_args();
 
 
 __DATA__
-# change the following ffmpeg arguments to suit your purposes
+# change the following ffmpeg options as suits
 
 -c:v libx264
 -preset:v medium

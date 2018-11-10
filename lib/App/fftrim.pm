@@ -27,23 +27,23 @@ sub initial_setup {
 	$dotdir = join_path($ENV{HOME}, '.fftrim');
 	my $did_something;
 	if ( ! -d $dotdir)
-	{	print STDERR qq(Directory "$dotdir" not found. Create it? [y/n] );
-		my $answer = <STDIN>;
-		mkdir($dotdir), $did_something++ if $answer =~ /[yYjJ]/;
+	{	mkdir $dotdir;
+		$did_something++;
 		my $default = join_path($dotdir, 'default');
-		print STDERR qq(Populate $default with ffmpeg options? [y/n] );
+		say STDERR qq(\n$default contains ffmpeg options to merge by default.);
+		print STDERR qq(\nShall I populate this file with some basic settings ? [y/n] );
+		my $answer = <STDIN>;
 		open my $fh, '>', $default;
-		$answer = <STDIN>;
-		if ($answer =~ /[yYjJ]/)
+		if ($answer =~ /YyJj/)
 		{
-			$did_something++;
 			my @lines = <DATA>;
 			print $fh @lines;	
 			say STDERR "Edit this file to suit your needs or create additional profiles";
 		}
-		else {print $fh}
+		else {print $fh "\n"}
 	}
-	$did_something
+	print "\n";
+	$did_something;
 }
 
 sub process_args {
