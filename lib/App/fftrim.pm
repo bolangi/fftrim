@@ -66,11 +66,12 @@ sub process_args {
 			@source_files = split ' ', $opt->{in};
 			$framerate = video_framerate($source_files[0]);
 			say "source files: ", join '|', @source_files;
-			$concat_target = to_mp4($source_files[0]);
+			$concat_target = $opt->{concat_only} ? $opt->{out} : to_mp4($source_files[0]);
 			say "concat target: $concat_target";
 			concatenate_video($concat_target, @source_files);
 		}
-		compress_and_trim_video($concat_target//$opt->{in}, $opt->{out}, $opt->{start} // 0, $opt->{end});
+		compress_and_trim_video($concat_target//$opt->{in}, $opt->{out}, $opt->{start} // 0, $opt->{end})
+			unless $opt->{concat_only};
 		exit
 	}
 

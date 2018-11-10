@@ -22,6 +22,7 @@ our ($opt, $usage) = describe_options(
    [ 'auto-frame-rate|a',"use same frame rate as source" ],
    [ 'n',      			"simulate: print commands but do not run them" ],
    [ 'm',      			"simulate: print commands omitting file checks" ],
+   [ 'concat-only|c',	"concatenate files only" ],
    [ 'old-concat',		"old naming for intermediate file" ],
    [ 'help',   			"print usage message and exit" ],
  );
