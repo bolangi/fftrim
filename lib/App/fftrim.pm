@@ -22,30 +22,42 @@ our ($opt, $usage,
 	@source_files,
 	$concat_target,
 );
+sub initial_setup {
+
+	$dotdir = join_path($ENV{HOME}, '.fftrim');
+	my $did_something;
+	if ( ! -d $dotdir)
+	{	print STDERR qq(Directory "$dotdir" not found. Create it? y/n );
+		my $answer = <STDIN>;
+		mkdir($dotdir), $did_something++ if $answer =~ /[yYjJ]/;
+		my $default = join_path($dotdir, 'default');
+		print STDERR qq(Populate $default with ffmpeg options? y/n );
+		open my $fh, '>', $default;
+		$answer = <STDIN>;
+		if ($answer =~ /[yYjJ]/)
+		{
+			$did_something++;
+			my @lines = <DATA>;
+			print $fh @lines;	
+			say STDERR "Edit this file to suit your needs or create additional profiles";
+		}
+		else {print $fh}
+	}
+	$did_something
+}
+
 sub process_args {
 
 
 	$current_dir = getcwd;
 
-	$dotdir = join_path($ENV{HOME}, '.fftrim');
-	if ( ! -d $dotdir)
-	{	say qq(Directory "$dotdir" not found. Create it? y/n [Y]);
-		my $answer = <STDIN>;
-		mkdir $dotdir if $answer =~ /[yYjJ]/;
-	}
-	$profile = join_path($dotdir,  $opt->{profile} // 'default');
-	if ($profile =~ /\bdefault$/ and ! -e $profile )
+	$profile = join_path($dotdir, $opt->{profile} // 'default');
+	if (-r $profile)
 	{
-		my $defaultfile = path($profile);
-		say STDERR "creating default profile in $profile";
-		$defaultfile->spew(<DATA>);
-		say STDERR "edit the settings to suit your output targets or create additional profiles";
+		open $fh, '<', $profile;
+		$encoding_params = join '', grep {! /^#/} <$fh>;
+		$encoding_params =~ s/\n/ /g;
 	}
-	say STDERR "profile is $profile";
-	if ( -r $profile){ open $fh, '<', $profile }
-	else { $fh = *DATA }
-	$encoding_params = join '', grep {! /^#/} <$fh>;
-	$encoding_params =~ s/\n/ /g;
 
 	# handle command line mode 
 	if ($opt->{in} and $opt->{out} ){
