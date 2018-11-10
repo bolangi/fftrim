@@ -28,7 +28,7 @@ our ($opt, $usage) = describe_options(
  );
 initial_setup() and exit;
 print($usage->text, 
-	"\nNote that --in, --out, --start and --end options are not available with batch mode\n"),
+	"\nNote that --in, --out, --start and --end options are not available in batch mode\n"),
 	exit if $opt->{help} or ! keys %$opt;
 
 process_args();
@@ -109,8 +109,7 @@ of the following format:
       00001.MTS       : part1.mp4   : 15.5 : 44:13 
 
 Arguments are separated by a colon character flanked by
-whitespace. You may also use a comma, semicolon, pipe can also be used as separators.
-Commented lines are ignored.
+whitespace. Commented lines are ignored.
 
 The following line creates F<part2.mp4> from source files
 F<00001.MTS> and F<00002.MTS>:
@@ -131,21 +130,22 @@ Please change them to suit yourself.
 
 =head3 Help
 
-  fftrim [-mnr] [long options...]
-  	--in STR          input file(s)
-  	--out STR         output file
-  	--start STR       start time
-  	--end STR         end time
-  	--profile STR     merge ffmpeg options from named file in
-  	                  $HOME/.fftrim
-  	--source-dir STR  batch mode, source directory
-  	--target-dir STR  batch mode, destination directory
-  	-r --frame-rate   specify framerate (with no arg: fallback to source
-  	                  file frame rate)
-  	-n                simulate: print commands but do not run them
-  	-m                simulate: print commands omitting file checks
-  	--old-concat      old naming for intermediate file
-  	--help            print usage message and exit
+  fftrim [-acmnpr] [long options...]
+  	--in STR                 input file(s)
+  	--out STR                output file
+  	--start STR              start time
+  	--end STR                end time
+  	-c --concat-only         concatenate only
+  	-p STR --profile STR     merge ffmpeg options from named file in
+  	                         $HOME/.fftrim
+  	--source-dir STR         batch mode, source directory
+  	--target-dir STR         batch mode, destination directory
+  	-r STR --frame-rate STR  specify frame rate
+  	-a --auto-frame-rate     use same frame rate as source
+  	-n                       simulate: print commands but do not run them
+  	-m                       simulate: print commands omitting file checks
+  	--old-concat             old naming for intermediate file
+  	--help                   print usage message and exit
   
   Note that --in, --out, --start and --end options are not available in batch mode
 
