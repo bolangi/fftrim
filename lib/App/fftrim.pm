@@ -86,7 +86,7 @@ sub process_args {
 	-d $finaldir or die "$finaldir is not a directory!";
 
 	$control = path($control_file);
-	(@lines) = grep {! /^#/} map{ chomp; $_ } $control->lines;
+	(@lines) = grep {! /^\s*$/ and ! /^\s*#/} map{ chomp; $_ } $control->lines;
 
 	process_lines(); # check for errors;
 	say(STDERR "Errors found. Fix $control_file and try again."), exit if $is_error;
@@ -109,7 +109,7 @@ sub process_lines {
 	foreach my $line (@lines){
 		$line =~ s/\s+$//;
 		say STDERR "line: $line";
-		my ($source_files, $target, $start, $end) = split /\s+[:|]\s+/, $line;
+		my ($source_files, $target, $start, $end) = split /\s+:\s+/, $line;
 		my @source_files = map{ join_path($opt->{source_dir}, $_)} split " ", $source_files;
 		$framerate = video_framerate($source_files[0]);
 		get_lengths(@source_files);
