@@ -165,6 +165,11 @@ sub trim_target { "$finaldir/$_[0]" }
 
 sub concatenate_video {
 	my ($target, @sources) = @_;
+	file_level_concat($target, @sources);
+}
+
+sub file_level_concat {
+	my ($target, @sources) = @_;
 	$target .= ".mp4" unless $target =~ /mp4$/;
 	say(STDERR "$target: file exists, skipping"), return if file_exists($target);
 	my $parts = join '|', @sources;
@@ -173,6 +178,7 @@ sub concatenate_video {
 	say $cmd;
 	system $cmd unless simulate();
 }
+
 sub compress_and_trim_video {
 	my ($input, $output, $start, $end) = @_;
 	say "compress and trim args: ",join " | ",$input, $output, $start, $end;
