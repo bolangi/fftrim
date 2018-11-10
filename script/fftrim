@@ -15,6 +15,7 @@ our ($opt, $usage) = describe_options(
    [ 'out=s',			"output file"],
    [ 'start=s',			"start time"],
    [ 'end=s',			"end time"],
+   [ 'concat-only|c',	"concatenate files only" ],
    [ 'profile=s',       'merge ffmpeg options from named file in $HOME/.fftrim'],
    [ 'source-dir=s',  	"batch mode, source directory" ],
    [ 'target-dir=s',	"batch mode, destination directory" ],
@@ -22,7 +23,6 @@ our ($opt, $usage) = describe_options(
    [ 'auto-frame-rate|a',"use same frame rate as source" ],
    [ 'n',      			"simulate: print commands but do not run them" ],
    [ 'm',      			"simulate: print commands omitting file checks" ],
-   [ 'concat-only|c',	"concatenate files only" ],
    [ 'old-concat',		"old naming for intermediate file" ],
    [ 'help',   			"print usage message and exit" ],
  );
