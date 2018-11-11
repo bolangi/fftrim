@@ -3,6 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 no warnings 'once';
+no warnings 'uninitialized';
 use feature 'say';
 use Cwd;
 our ($opt, $usage,
