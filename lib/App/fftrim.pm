@@ -3,8 +3,6 @@ use 5.006;
 use strict;
 use warnings;
 no warnings 'once';
-use Path::Tiny;
-use autodie ':all';
 use feature 'say';
 use Cwd;
 our ($opt, $usage,
@@ -86,8 +84,8 @@ sub process_args {
 	mkdir $finaldir unless -e $finaldir;
 	-d $finaldir or die "$finaldir is not a directory!";
 
-	$control = path($control_file);
-	(@lines) = grep {! /^\s*$/ and ! /^\s*#/} map{ chomp; $_ } $control->lines;
+	open my $fh, '<',$control_file;
+	(@lines) = grep {! /^\s*$/ and ! /^\s*#/} map{ chomp; $_ } <$fh>;
 
 	process_lines(); # check for errors;
 	say(STDERR "Errors found. Fix $control_file and try again."), exit if $is_error;

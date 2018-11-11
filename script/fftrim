@@ -15,8 +15,6 @@ use 5.006;
 use strict;
 use warnings;
 use App::fftrim;
-use Path::Tiny;
-use autodie ':all';
 use feature 'say';
 use Cwd;
 use Getopt::Long::Descriptive;
