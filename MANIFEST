@@ -10,6 +10,3 @@ script/fftrim
 t/00-load.t
 t/01-decode-cutpoint.t
 t/manifest.t
-t/pod-coverage.t
-t/pod.t
-xt/boilerplate.t
