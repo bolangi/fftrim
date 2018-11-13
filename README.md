@@ -13,6 +13,7 @@
 -   [SUPPORT](#SUPPORT)
 -   [ACKNOWLEDGEMENTS](#ACKNOWLEDGEMENTS)
 -   [LICENSE AND COPYRIGHT](#LICENSE-AND-COPYRIGHT)
+-   [POD ERRORS](#POD-ERRORS)
 
 NAME {#NAME}
 ====
@@ -28,11 +29,21 @@ Version 0.03
 SYNOPSIS {#SYNOPSIS}
 ========
 
-`fftrim --in 00001.MTS --out clip1.mp4 --start 15.5 --end 44:13`
+`# single output file`
 
-`fftrim --in "00001.MTS 00002.MTS" --out clip2.mp4 --start 44:13 --end 2-24:55`
+`fftrim --in 00001.MTS --out part1.mp4 --start 15.5 --end 44:13`
 
-`fftrim -n --source-dir raw --target-dir final`
+`fftrim --in "00001.MTS 00002.MTS" --out part2.mp4 --start 44:13 --end 2-24:55`
+
+`# batch mode`
+
+`fftrim --source-dir raw --target-dir final`
+
+`# raw/CONTROL contains:`
+
+` 00001.MTS : part1.mp4 : 15.5 : 44:13 `
+
+` 00001.MTS 00002.MTS : part2.mp4 : 44:13 : 2-24:55 `
 
 DESCRIPTION {#DESCRIPTION}
 ===========
@@ -48,14 +59,14 @@ or Pansonic camera.
 Trimming a single file {#Trimming-a-single-file}
 ======================
 
-`fftrim --in 00001.MTS --out clip1.mp4 --start 15.5 --end 44:13`
+`fftrim --in 00001.MTS --out part1.mp4 --start 15.5 --end 44:13`
 
 Concatenating multiple source files {#Concatenating-multiple-source-files}
 ===================================
 
-`fftrim --in "00001.MTS 00002.MTS 00003.MTS" --out clip2.mp4 --start 44:13 --end 2-24:55`
+`fftrim --in "00001.MTS 00002.MTS 00003.MTS" --out part2.mp4 --start 44:13 --end 2-24:55`
 
-`fftrim --in "00001.MTS 00002.MTS 00003.MTS" --out clip3.mp4 --start 2-24:55 --end 3-1:05`
+`fftrim --in "00001.MTS 00002.MTS 00003.MTS" --out part3.mp4 --start 2-24:55 --end 3-1:05`
 
 The expression `2-24:55` means a position in the concatenated file that
 includes the full length of the first clip and 24:55 of the second clip.
@@ -103,7 +114,7 @@ Profiles {#Profiles}
 containing ffmpeg options.
 
 Adding `--profile highres` to the command line will merge options from
-the file *\$HOME/.fftrim/highres*.
+the file *\$HOME/.fftrim/highres* if it exists.
 
 Be sure to look at *\$HOME/.fftrim/default*. These options are are
 merged by default, that is when `--profile` is not supplied. Please
@@ -193,3 +204,15 @@ YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO COPYRIGHT HOLDER OR
 CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR
 CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+POD ERRORS {#POD-ERRORS}
+==========
+
+Hey! **The above document had some coding errors, which are explained
+below:**
+
+Around line 76:
+
+:   Unterminated C&lt;...&gt; sequence
+
+
