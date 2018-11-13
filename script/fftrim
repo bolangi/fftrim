@@ -63,21 +63,21 @@ __DATA__
 
 =head1 SYNOPSIS
 
-C<# single output file>
-
-C<fftrim --in 00001.MTS --out part1.mp4 --start 15.5 --end 44:13>
-
-C<fftrim --in "00001.MTS 00002.MTS" --out part2.mp4 --start 44:13 --end 2-24:55>
-
-C<# batch mode>
-
-C<fftrim --source-dir raw --target-dir final>
-
-C<# raw/CONTROL contains:
-
-C<    00001.MTS           : part1.mp4 :     15.5 :   44:13 >
-
-C<    00001.MTS 00002.MTS : part2.mp4 :  44:13   : 2-24:55 >
+  # single output file
+  
+  fftrim --in 00001.MTS --out part1.mp4 --start 15.5 --end 44:13
+  
+  fftrim --in "00001.MTS 00002.MTS" --out part2.mp4 --start 44:13 --end 2-24:55
+  
+  # batch mode
+  
+  fftrim --source-dir raw --target-dir final
+  
+  # the text file CONTROL in the source directory contains:
+  
+      00001.MTS           : part1.mp4 :     15.5 :   44:13 
+  
+      00001.MTS 00002.MTS : part2.mp4 :  44:13   : 2-24:55 
 
 =head1 DESCRIPTION
 

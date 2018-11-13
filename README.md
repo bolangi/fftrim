@@ -13,7 +13,6 @@
 -   [SUPPORT](#SUPPORT)
 -   [ACKNOWLEDGEMENTS](#ACKNOWLEDGEMENTS)
 -   [LICENSE AND COPYRIGHT](#LICENSE-AND-COPYRIGHT)
--   [POD ERRORS](#POD-ERRORS)
 
 NAME {#NAME}
 ====
@@ -29,21 +28,21 @@ Version 0.03
 SYNOPSIS {#SYNOPSIS}
 ========
 
-`# single output file`
-
-`fftrim --in 00001.MTS --out part1.mp4 --start 15.5 --end 44:13`
-
-`fftrim --in "00001.MTS 00002.MTS" --out part2.mp4 --start 44:13 --end 2-24:55`
-
-`# batch mode`
-
-`fftrim --source-dir raw --target-dir final`
-
-`# raw/CONTROL contains:`
-
-` 00001.MTS : part1.mp4 : 15.5 : 44:13 `
-
-` 00001.MTS 00002.MTS : part2.mp4 : 44:13 : 2-24:55 `
+      # single output file
+      
+      fftrim --in 00001.MTS --out part1.mp4 --start 15.5 --end 44:13
+      
+      fftrim --in "00001.MTS 00002.MTS" --out part2.mp4 --start 44:13 --end 2-24:55
+      
+      # batch mode
+      
+      fftrim --source-dir raw --target-dir final
+      
+      # the text file CONTROL in the source directory contains:
+      
+          00001.MTS           : part1.mp4 :     15.5 :   44:13 
+      
+          00001.MTS 00002.MTS : part2.mp4 :  44:13   : 2-24:55 
 
 DESCRIPTION {#DESCRIPTION}
 ===========
@@ -204,15 +203,3 @@ YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO COPYRIGHT HOLDER OR
 CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR
 CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-POD ERRORS {#POD-ERRORS}
-==========
-
-Hey! **The above document had some coding errors, which are explained
-below:**
-
-Around line 76:
-
-:   Unterminated C&lt;...&gt; sequence
-
-
