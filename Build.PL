@@ -17,6 +17,7 @@ my $builder = Module::Build->new(
         'Test::More' => '0',
     },
     requires => {
+		'feature'	=> '0',
     },
     add_to_cleanup     => [ 'App-fftrim-*' ],
 );
