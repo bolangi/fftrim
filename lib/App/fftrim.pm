@@ -56,6 +56,8 @@ sub process_args {
 	{
 		open $fh, '<', $profile;
 		$encoding_params = join '', grep {! /^#/} <$fh>;
+		say "parameters from profile $profile:";
+		say $encoding_params;
 		$encoding_params =~ s/\n/ /g;
 	}
 
