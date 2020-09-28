@@ -119,7 +119,7 @@ sub process_lines {
 		}
 		else {
 			# pass filenames with extension, otherwise append .mp4
-			$target = mp4($target) unless $target =~ /\.[a-zA-Z]{3}$/ 
+			$target = to_mp4($target) unless $target =~ /\.[a-zA-Z0-9]{3}$/ 
 		}
 		{
 		no warnings 'uninitialized';
